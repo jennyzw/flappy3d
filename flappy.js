@@ -57,7 +57,8 @@ render();
 
 
 function loadBackground(params) {
-    var planeGeom = new THREE.PlaneGeometry(sceneWidth, params.sceneHeight);
+    // var planeGeom = new THREE.PlaneGeometry(sceneWidth, params.sceneHeight);
+    var planeGeom = new THREE.PlaneGeometry(1000, 1000);
     var imageLoaded = false;
     var backgroundTexture = new THREE.ImageUtils.loadTexture( "/images/background-orig.jpg",
                                                          THREE.UVMapping,
@@ -73,7 +74,7 @@ function loadBackground(params) {
     
     var backgroundMesh = new THREE.Mesh( planeGeom, backgroundMat );
     backgroundMesh.position.x = sceneWidth/2;
-    backgroundMesh.position.z = -params.sceneDepth;
+    backgroundMesh.position.z = -params.sceneDepth/4;
     console.log(backgroundMesh);
     return backgroundMesh;
 }
