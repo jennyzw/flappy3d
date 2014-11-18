@@ -1,4 +1,8 @@
-flappybird3d
+flappy3d
 ============
 
-Flappy Bird 3D, using Three.js
+Flappy Bunny 3D, using Three.js
+
+##Usage
+    python -m SimpleHTTPServer
+    localhost:8000
