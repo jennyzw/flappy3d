@@ -1,11 +1,11 @@
 
-/* good webapp animation example: http://nebez.github.io/floppybird/ */
+/* good webapp animation example: http://nebez.github.io/floppybunny/ */
 
 var params = {
-	birdRadius: 5,
-	birdSphereDetail: 20,
-	birdPositionY: 5,
-	birdColor: new THREE.Color(0xFF7519),
+	bunnyRadius: 5,
+	bunnySphereDetail: 20,
+	bunnyPositionY: 5,
+	bunnyColor: new THREE.Color(0xFF7519),
 	pipeRadius: 5,
 	pipeCylDetail: 20,
 	topPipeHeights: [20, 30, 50, 10],
@@ -29,8 +29,8 @@ var scene = new THREE.Scene();
 var sceneWidth = params.topPipeHeights.length*params.pipeOffsetX;
 
 function myCamera(fovy,eye, at) {
-	// var canvas = document.getElementById('mycanvas');
-	camera = new THREE.PerspectiveCamera( fovy, canvas.innerWidth/canvas.innerHeight*2, 1, 300);
+	// var canvas = document.getElementsByTagName("canvas")[0];
+	camera = new THREE.PerspectiveCamera( fovy, 800/500, 1, 300);
 	camera.position.copy(eye);
 	// camera.up.copy(up);
 	camera.lookAt(at);
@@ -78,12 +78,12 @@ function loadBackground(params) {
 }
 
 
-/* builds bird  
+/* builds bunny  
 	texture map some wings or photo later*/
-function buildBird(params) {
-	var birdGeom = new THREE.SphereGeometry(params.birdRadius, 
-		params.birdSphereDetail, params.birdSphereDetail);
-	var birdTexture = new THREE.ImageUtils.loadTexture( "/images/feather.jpg",
+function buildBunny(params) {
+	var bunnyGeom = new THREE.SphereGeometry(params.bunnyRadius, 
+		params.bunnySphereDetail, params.bunnySphereDetail);
+	var bunnyTexture = new THREE.ImageUtils.loadTexture( "/images/feather.jpg",
                                                          THREE.UVMapping,
                                                          // onload event handler
                                                          function () {
@@ -91,13 +91,13 @@ function buildBird(params) {
                                                              imageLoaded = true;
                                                              render();
                                                          });
-	var birdMat = new THREE.MeshPhongMaterial( {color: params.birdColor,
-												ambient: params.birdColor,
+	var bunnyMat = new THREE.MeshPhongMaterial( {color: params.bunnyColor,
+												ambient: params.bunnyColor,
 												specular: 0xFFFFFF,
 												shininess: 5,
-												map: birdTexture} );
-	var birdMesh = new THREE.Mesh(birdGeom, birdMat);
-	return birdMesh;
+												map: bunnyTexture} );
+	var bunnyMesh = new THREE.Mesh(bunnyGeom, bunnyMat);
+	return bunnyMesh;
 }
 
 /* build one single pipe */
@@ -171,14 +171,14 @@ function buildAllPipes(params) {
 	return pipeSets;
 }
 
-/* build bird, all pipes, place on scene
+/* build bunny, all pipes, place on scene
 	add lights to the scene */
 function buildScene(params, scene) {
 	var background = loadBackground(params);
 	scene.add(background);
 
-	var bird = buildBird(params);
-	scene.add(bird);
+	var bunny = buildBunny(params);
+	scene.add(bunny);
 
 	var pipes = buildAllPipes(params);
 	// console.log(pipes);
