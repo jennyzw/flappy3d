@@ -12,7 +12,7 @@ var params = {
 	pipeColor: new THREE.Color(0x66FF66),
 	pipeEndColor: new THREE.Color(0x47B247),
 	pipeEndHeight: 3,
-	sceneHeight: 100,
+	sceneHeight: 150,
 	sceneWidth: 70,
 	sceneDepth: 10,
 	pipeOffsetX: 40,
@@ -25,16 +25,57 @@ var params = {
 
 var scene = new THREE.Scene();
 
-var renderer = new THREE.WebGLRenderer();
-
-TW.mainInit(renderer,scene);
 
 var sceneWidth = params.topPipeHeights.length*params.pipeOffsetX;
-console.log(params.topPipeHeights.length);
-TW.cameraSetup(renderer, scene,
-	{minx: 0, maxx: sceneWidth,
-	miny: -params.sceneHeight/2, maxy: params.sceneHeight/2,
-	minz: -params.sceneDepth, maxz: params.sceneDepth});
+
+function myCamera(fovy,eye, at) {
+	// var canvas = document.getElementById('mycanvas');
+	camera = new THREE.PerspectiveCamera( fovy, canvas.innerWidth/canvas.innerHeight*2, 1, 300);
+	camera.position.copy(eye);
+	// camera.up.copy(up);
+	camera.lookAt(at);
+	scene.add(camera);
+}
+var fovy = 70;
+// var eyeZ = Math.tan(fovy/2) * (params.sceneHeight);
+ var eye = new THREE.Vector3(0,0,250);
+ var at = new THREE.Vector3(0,0,0);
+ myCamera(fovy,eye, at);
+
+ var renderer = new THREE.WebGLRenderer();
+ function render() {
+    renderer.render(scene, camera);
+ }
+TW.mainInit(renderer,scene);
+render();
+
+// TW.cameraSetup(renderer, scene,
+// 	{minx: 0, maxx: sceneWidth,
+// 	miny: -params.sceneHeight/2, maxy: params.sceneHeight/2,
+// 	minz: -params.sceneDepth, maxz: params.sceneDepth});
+
+
+function loadBackground(params) {
+    var planeGeom = new THREE.PlaneGeometry(sceneWidth, params.sceneHeight);
+    var imageLoaded = false;
+    var backgroundTexture = new THREE.ImageUtils.loadTexture( "/images/background-orig.jpg",
+                                                         THREE.UVMapping,
+                                                         // onload event handler
+                                                         function () {
+                                                             console.log("image is loaded.");
+                                                             imageLoaded = true;
+                                                             render();
+                                                         });
+    var backgroundMat = new THREE.MeshBasicMaterial(
+        {color: THREE.ColorKeywords.white,
+         map: backgroundTexture});
+    
+    var backgroundMesh = new THREE.Mesh( planeGeom, backgroundMat );
+    backgroundMesh.position.x = sceneWidth/2;
+    backgroundMesh.position.z = -params.sceneDepth;
+    console.log(backgroundMesh);
+    return backgroundMesh;
+}
 
 
 /* builds bird  
@@ -42,10 +83,19 @@ TW.cameraSetup(renderer, scene,
 function buildBird(params) {
 	var birdGeom = new THREE.SphereGeometry(params.birdRadius, 
 		params.birdSphereDetail, params.birdSphereDetail);
+	var birdTexture = new THREE.ImageUtils.loadTexture( "/images/feather.jpg",
+                                                         THREE.UVMapping,
+                                                         // onload event handler
+                                                         function () {
+                                                             console.log("image is loaded.");
+                                                             imageLoaded = true;
+                                                             render();
+                                                         });
 	var birdMat = new THREE.MeshPhongMaterial( {color: params.birdColor,
 												ambient: params.birdColor,
 												specular: 0xFFFFFF,
-												shininess: 5} );
+												shininess: 5,
+												map: birdTexture} );
 	var birdMesh = new THREE.Mesh(birdGeom, birdMat);
 	return birdMesh;
 }
@@ -114,7 +164,7 @@ function buildAllPipes(params) {
 	for(pipeIndex in params.topPipeHeights) {
 		var pipeSet = buildPipeSet(params, pipeIndex);
 		pipeSet.position.x = ((++pipeIndex)*pipeOffsetX);
-		console.log(pipeSet);
+		// console.log(pipeSet);
 		pipeSets.push(pipeSet);
 		// pipeSets.push(buildPipeSet(params, pipeIndex));
 	}
@@ -124,11 +174,14 @@ function buildAllPipes(params) {
 /* build bird, all pipes, place on scene
 	add lights to the scene */
 function buildScene(params, scene) {
+	var background = loadBackground(params);
+	scene.add(background);
+
 	var bird = buildBird(params);
 	scene.add(bird);
 
 	var pipes = buildAllPipes(params);
-	console.log(pipes);
+	// console.log(pipes);
 	for(pipeIndex in params.topPipeHeights) {
 		scene.add(pipes[pipeIndex]);
 	} 
@@ -142,7 +195,7 @@ function buildScene(params, scene) {
                                    params.directionalY, 
                                    params.directionalZ ); 
     scene.add(directionalLight);
-	TW.render();
+	render();
 }	
 
 buildScene(params, scene);
