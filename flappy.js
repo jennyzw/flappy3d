@@ -2,10 +2,10 @@
 /* good webapp animation example: http://nebez.github.io/floppybunny/ */
 
 var params = {
-	bunnyRadius: 5,
-	bunnySphereDetail: 20,
-	bunnyPositionY: 5,
-	bunnyColor: new THREE.Color(0xFF7519),
+	// bunnyRadius: 5,
+	// bunnySphereDetail: 20,
+	// bunnyPositionY: 5,
+	// bunnyColor: new THREE.Color(0xFF7519),
 	pipeRadius: 5,
 	pipeCylDetail: 20,
 	topPipeHeights: [20, 30, 50, 10],
@@ -30,6 +30,7 @@ var sceneWidth = params.topPipeHeights.length*params.pipeOffsetX;
 
 function myCamera(fovy,eye, at) {
 	// var canvas = document.getElementsByTagName("canvas")[0];
+	var canvas = TW.lastClickTarget;
 	camera = new THREE.PerspectiveCamera( fovy, 800/500, 1, 300);
 	camera.position.copy(eye);
 	// camera.up.copy(up);
@@ -80,25 +81,32 @@ function loadBackground(params) {
 
 /* builds bunny  
 	texture map some wings or photo later*/
-function buildBunny(params) {
-	var bunnyGeom = new THREE.SphereGeometry(params.bunnyRadius, 
-		params.bunnySphereDetail, params.bunnySphereDetail);
-	var bunnyTexture = new THREE.ImageUtils.loadTexture( "/images/feather.jpg",
-                                                         THREE.UVMapping,
-                                                         // onload event handler
-                                                         function () {
-                                                             console.log("image is loaded.");
-                                                             imageLoaded = true;
-                                                             render();
-                                                         });
-	var bunnyMat = new THREE.MeshPhongMaterial( {color: params.bunnyColor,
-												ambient: params.bunnyColor,
-												specular: 0xFFFFFF,
-												shininess: 5,
-												map: bunnyTexture} );
-	var bunnyMesh = new THREE.Mesh(bunnyGeom, bunnyMat);
-	return bunnyMesh;
-}
+// function buildBunny(params) {
+	// var bunny = new THREE.Object3D();
+	// var bunnyGeom = new THREE.SphereGeometry(params.bunnyRadius, 
+	// 	params.bunnySphereDetail, params.bunnySphereDetail);
+	// var bunnyTexture = new THREE.ImageUtils.loadTexture( "/images/fur.jpg",
+ //                                                         THREE.UVMapping,
+ //                                                         // onload event handler
+ //                                                         function () {
+ //                                                             console.log("image is loaded.");
+ //                                                             imageLoaded = true;
+ //                                                             render();
+ //                                                         });
+	// var bunnyMat = new THREE.MeshPhongMaterial( {color: params.bunnyColor,
+	// 											ambient: params.bunnyColor,
+	// 											specular: 0xFFFFFF,
+	// 											shininess: 5,
+	// 											map: bunnyTexture} );
+	// var bunnyMesh = new THREE.Mesh(bunnyGeom, bunnyMat);
+
+	// var scale = 1.2;
+ //    bunnyMesh.scale.x = scale;
+
+	// return bunnyMesh;
+
+
+// }
 
 /* build one single pipe */
 function buildPipe(params, pipeHeight) { 
@@ -177,7 +185,7 @@ function buildScene(params, scene) {
 	var background = loadBackground(params);
 	scene.add(background);
 
-	var bunny = buildBunny(params);
+	var bunny = buildBunny();
 	scene.add(bunny);
 
 	var pipes = buildAllPipes(params);
