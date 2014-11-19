@@ -1,12 +1,12 @@
 //texture via http://www.photoshoptextures.com/animal-textures/cat-spots-texture.jpg
 var bunnyParams = {
-	bodyRadius: 5,
+	bodyRadius: 10,
 	bodyScale: 1.2,
-	headRadius: 4,
+	headRadius: 8,
 	sphereDetail: 20,
-	appRadius: 1,
+	appRadius: 2,
 	appScale: 4,
-	tailRadius: 2,
+	tailRadius: 4,
 	furColor: new THREE.Color(0xCCCCCC),
 	texture: new THREE.ImageUtils.loadTexture( "/images/fur.jpg",
                                                      THREE.UVMapping,

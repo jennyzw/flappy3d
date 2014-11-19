@@ -6,16 +6,18 @@ var params = {
 	// bunnySphereDetail: 20,
 	// bunnyPositionY: 5,
 	// bunnyColor: new THREE.Color(0xFF7519),
-	pipeRadius: 5,
+        bunnyStartOffset: 30,
+	pipeRadius: 15,
 	pipeCylDetail: 20,
 	topPipeHeights: [40, 60, 50, 80],
 	pipeColor: new THREE.Color(0x66FF66),
 	pipeEndColor: new THREE.Color(0x47B247),
 	pipeEndHeight: 3,
-	sceneHeight: 180,
-	sceneWidth: 70,
+        pipeSpaceHeight: 60,
+	sceneHeight: 250,
+	sceneWidth: 100,
 	sceneDepth: 10,
-	pipeOffsetX: 70,
+	pipeOffsetX: 90,
 	ambLightColor: 0x808080,
 	lightIntensity: .3,
 	directionalX: 0, 
@@ -42,7 +44,6 @@ var canvasHeight = canvas.height;
 
 function myCamera(fovy,eye, at) {
 	var canvas = TW.lastClickTarget;
-	//camera = new THREE.PerspectiveCamera( fovy, 800/500, 1, 300);
 	camera = new THREE.PerspectiveCamera( fovy, canvasWidth/canvasHeight, 1, 300);
 	camera.position.copy(eye);
 	camera.lookAt(at);
@@ -50,13 +51,13 @@ function myCamera(fovy,eye, at) {
 }
 
 //adjust camera to display scene with bunny on far left and zoomed in view of pipes
-var fovy = 90;
-var cameraAdjustX = 70;
-var cameraAdjustY = 10;
+var fovy = 50;
+var cameraAdjustX = 180;
+var cameraAdjustY = 0;
 // var eyeZ = Math.tan(fovy/2) * (params.sceneHeight);
- var eye = new THREE.Vector3(cameraAdjustX,cameraAdjustY,70);
+ var eye = new THREE.Vector3(cameraAdjustX,cameraAdjustY,250);
  var at = new THREE.Vector3(cameraAdjustX,cameraAdjustY,0);
- myCamera(fovy,eye, at);
+ myCamera(fovy,eye,at);
 
 render();
 
@@ -127,7 +128,7 @@ function buildPipeSet(params, pipeIndex) {
 	var sceneHeight = params.sceneHeight;
 	var sceneHeightHalf = sceneHeight/2;
 
-	var pipeSpaceHeight = 30; //random # gen priority 2
+	var pipeSpaceHeight = params.pipeSpaceHeight || 30; //random # gen priority 2
 	var topHeight = params.topPipeHeights[pipeIndex];
 	var bottomHeight = sceneHeight - topHeight - pipeSpaceHeight;
 
@@ -167,6 +168,7 @@ function buildScene(params, scene) {
 	scene.add(background);
 
 	var bunny = buildBunny();
+        bunny.position.x = params.bunnyStartOffset;
 	scene.add(bunny);
 
 	var pipes = buildAllPipes(params);
