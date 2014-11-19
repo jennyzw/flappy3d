@@ -1,3 +1,4 @@
+//texture via http://www.photoshoptextures.com/animal-textures/cat-spots-texture.jpg
 var bunnyParams = {
 	bodyRadius: 5,
 	bodyScale: 1.2,
