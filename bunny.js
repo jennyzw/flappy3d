@@ -1,4 +1,12 @@
-//texture via http://www.photoshoptextures.com/animal-textures/cat-spots-texture.jpg
+/* Author: Tiffany Ang, Jenny Wang
+ * Date: 11/19/14
+ * Assignment: HW6 - Creative Scene
+ *
+ * Creates a 3d bunny object.
+ *
+ * texture via http://www.photoshoptextures.com/animal-textures/cat-spots-texture.jpg
+ */ 
+
 var bunnyParams = {
 	bodyRadius: 10,
 	bodyScale: 1.2,
@@ -7,7 +15,7 @@ var bunnyParams = {
 	appRadius: 2,
 	appScale: 4,
 	tailRadius: 4,
-	furColor: new THREE.Color(0xCCCCCC),
+	furColor: new THREE.Color(0xF0F0F0),
 	texture: new THREE.ImageUtils.loadTexture( "/images/fur.jpg",
                                                      THREE.UVMapping,
                                                      // onload event handler
@@ -125,11 +133,4 @@ function buildTail() {
     return tail;
 }
 
-function buildArmSet() {
-    var arms = new THREE.Object3D();
-    var armLeft = buildAppendage();
-    var armRight = buildAppendage();
-    return arms;
-
-}
 

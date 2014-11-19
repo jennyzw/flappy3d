@@ -13,11 +13,11 @@ var params = {
 	pipeColor: new THREE.Color(0x66FF66),
 	pipeEndColor: new THREE.Color(0x47B247),
 	pipeEndHeight: 3,
-        pipeSpaceHeight: 60,
+        pipeSpaceHeight: 90,
 	sceneHeight: 250,
 	sceneWidth: 100,
 	sceneDepth: 10,
-	pipeOffsetX: 90,
+	pipeOffsetX: 130,
 	ambLightColor: 0x808080,
 	lightIntensity: .3,
 	directionalX: 0, 
@@ -68,7 +68,7 @@ render();
 
 
 function loadBackground(params) {
-    var planeGeom = new THREE.PlaneGeometry(sceneWidth, params.sceneHeight);
+    var planeGeom = new THREE.PlaneGeometry(sceneWidth+params.pipeRadius*2, params.sceneHeight+params.pipeRadius*2);
     // var planeGeom = new THREE.PlaneGeometry(1000, 1000);
     var imageLoaded = false;
     var backgroundTexture = new THREE.ImageUtils.loadTexture( "/images/background-orig.jpg",
@@ -85,7 +85,7 @@ function loadBackground(params) {
     
     var backgroundMesh = new THREE.Mesh( planeGeom, backgroundMat );
     backgroundMesh.position.x = sceneWidth/2;
-    backgroundMesh.position.z = -params.sceneDepth/4;
+    backgroundMesh.position.z = -params.pipeRadius*2;
     console.log(backgroundMesh);
     return backgroundMesh;
 }
