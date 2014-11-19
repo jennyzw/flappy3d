@@ -67,8 +67,8 @@ render();
 
 
 function loadBackground(params) {
-    // var planeGeom = new THREE.PlaneGeometry(sceneWidth, params.sceneHeight);
-    var planeGeom = new THREE.PlaneGeometry(1000, 1000);
+    var planeGeom = new THREE.PlaneGeometry(sceneWidth, params.sceneHeight);
+    // var planeGeom = new THREE.PlaneGeometry(1000, 1000);
     var imageLoaded = false;
     var backgroundTexture = new THREE.ImageUtils.loadTexture( "/images/background-orig.jpg",
                                                          THREE.UVMapping,
