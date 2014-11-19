@@ -8,14 +8,14 @@ var params = {
 	// bunnyColor: new THREE.Color(0xFF7519),
 	pipeRadius: 5,
 	pipeCylDetail: 20,
-	topPipeHeights: [20, 30, 50, 10],
+	topPipeHeights: [40, 60, 50, 80],
 	pipeColor: new THREE.Color(0x66FF66),
 	pipeEndColor: new THREE.Color(0x47B247),
 	pipeEndHeight: 3,
-	sceneHeight: 150,
+	sceneHeight: 180,
 	sceneWidth: 70,
 	sceneDepth: 10,
-	pipeOffsetX: 40,
+	pipeOffsetX: 70,
 	ambLightColor: 0x808080,
 	lightIntensity: .3,
 	directionalX: 0, 
@@ -39,6 +39,7 @@ var canvas = TW.lastClickTarget;
 var canvasWidth = canvas.width;
 var canvasHeight = canvas.height;
 
+
 function myCamera(fovy,eye, at) {
 	var canvas = TW.lastClickTarget;
 	//camera = new THREE.PerspectiveCamera( fovy, 800/500, 1, 300);
@@ -47,10 +48,14 @@ function myCamera(fovy,eye, at) {
 	camera.lookAt(at);
 	scene.add(camera);
 }
-var fovy = 70;
+
+//adjust camera to display scene with bunny on far left and zoomed in view of pipes
+var fovy = 90;
+var cameraAdjustX = 70;
+var cameraAdjustY = 10;
 // var eyeZ = Math.tan(fovy/2) * (params.sceneHeight);
- var eye = new THREE.Vector3(0,0,250);
- var at = new THREE.Vector3(0,0,0);
+ var eye = new THREE.Vector3(cameraAdjustX,cameraAdjustY,70);
+ var at = new THREE.Vector3(cameraAdjustX,cameraAdjustY,0);
  myCamera(fovy,eye, at);
 
 render();
@@ -83,36 +88,6 @@ function loadBackground(params) {
     console.log(backgroundMesh);
     return backgroundMesh;
 }
-
-
-/* builds bunny  
-	texture map some wings or photo later*/
-// function buildBunny(params) {
-	// var bunny = new THREE.Object3D();
-	// var bunnyGeom = new THREE.SphereGeometry(params.bunnyRadius, 
-	// 	params.bunnySphereDetail, params.bunnySphereDetail);
-	// var bunnyTexture = new THREE.ImageUtils.loadTexture( "/images/fur.jpg",
- //                                                         THREE.UVMapping,
- //                                                         // onload event handler
- //                                                         function () {
- //                                                             console.log("image is loaded.");
- //                                                             imageLoaded = true;
- //                                                             render();
- //                                                         });
-	// var bunnyMat = new THREE.MeshPhongMaterial( {color: params.bunnyColor,
-	// 											ambient: params.bunnyColor,
-	// 											specular: 0xFFFFFF,
-	// 											shininess: 5,
-	// 											map: bunnyTexture} );
-	// var bunnyMesh = new THREE.Mesh(bunnyGeom, bunnyMat);
-
-	// var scale = 1.2;
- //    bunnyMesh.scale.x = scale;
-
-	// return bunnyMesh;
-
-
-// }
 
 /* build one single pipe */
 function buildPipe(params, pipeHeight) { 
