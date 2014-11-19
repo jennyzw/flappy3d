@@ -97,7 +97,8 @@ function buildEarSet() {
 	return ears;
 }
 
-/* rotates the feet to the proper orientation (long-side horizontally on x-axis) */
+/* rotates the feet to the proper orientation (long-side horizontally on x-axis) 
+ * returns a THREE.Object3D called feet containing the 2 feet */
 function buildFeetSet() {
 	var feet = new THREE.Object3D();
 	var footLeft = buildAppendage();
@@ -111,7 +112,8 @@ function buildFeetSet() {
 	return feet;
 }
 
-/* small cute sphere tail fur */
+/* small cute sphere tail fur 
+ * returns a THREE.Object3D */
 function buildTail() {
 	var tail = new THREE.Object3D();
 	var tailGeom = new THREE.SphereGeometry(bunnyParams.tailRadius,
@@ -121,3 +123,12 @@ function buildTail() {
 
     return tail;
 }
+
+function buildArmSet() {
+    var arms = new THREE.Object3D();
+    var armLeft = buildAppendage();
+    var armRight = buildAppendage();
+    return arms;
+
+}
+

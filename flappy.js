@@ -1,4 +1,4 @@
-
+/* creates a 3D scene of flappy bird, with a bunny instead of a bird */
 /* good webapp animation example: http://nebez.github.io/floppybunny/ */
 
 var params = {
@@ -25,15 +25,25 @@ var params = {
 
 var scene = new THREE.Scene();
 
-
 var sceneWidth = params.topPipeHeights.length*params.pipeOffsetX;
 
+var renderer = new THREE.WebGLRenderer();
+function render() {
+    renderer.render(scene, camera);
+}
+
+TW.mainInit(renderer,scene);
+
+var canvas = TW.lastClickTarget;
+
+var canvasWidth = canvas.width;
+var canvasHeight = canvas.height;
+
 function myCamera(fovy,eye, at) {
-	// var canvas = document.getElementsByTagName("canvas")[0];
 	var canvas = TW.lastClickTarget;
-	camera = new THREE.PerspectiveCamera( fovy, 800/500, 1, 300);
+	//camera = new THREE.PerspectiveCamera( fovy, 800/500, 1, 300);
+	camera = new THREE.PerspectiveCamera( fovy, canvasWidth/canvasHeight, 1, 300);
 	camera.position.copy(eye);
-	// camera.up.copy(up);
 	camera.lookAt(at);
 	scene.add(camera);
 }
@@ -43,11 +53,6 @@ var fovy = 70;
  var at = new THREE.Vector3(0,0,0);
  myCamera(fovy,eye, at);
 
- var renderer = new THREE.WebGLRenderer();
- function render() {
-    renderer.render(scene, camera);
- }
-TW.mainInit(renderer,scene);
 render();
 
 // TW.cameraSetup(renderer, scene,
