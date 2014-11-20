@@ -1,24 +1,51 @@
-/* creates a 3D scene of flappy bird, with a bunny instead of a bird */
-/* good webapp animation example: http://nebez.github.io/floppybunny/ */
+/* 
+Tiffany Ang, Jenny Wang
+11/19/14 
+CS 307
+
+creates a 3D scene of flappy bird, with a bunny instead of a bird 
+Current status: Single static frame of game
+
+Dimensions of objects
+Whole scene: -520 to 520 on the x-axis, -250 to 250 on the y-axis
+Bunny: -[bodyRadius*bodyScale+tailRadius] to [bodyRadius*bodyScale+headRadius]
+		-16 to 20 on the x-axis
+
+		-[bodyRadius+appRadius] to [bodyRadius+headRadius+appRadius*appScale]
+		-12 to 26 on the y-axis
+
+		-[bodyRadius] to [bodyRadius]
+		-10 to 10 on the z-axis
+All pipe sets: [pipeOffsetX-pipeEndRadius] to [pipeOffsetX-pipeEndRadius]+[pipeOffsetX*number of pipes]
+			   114 to 634 on the x-axis
+
+			  -250 to 250 on the y-axis
+
+			  -[pipeEndRadius] to [pipeEndRadius]
+			  -16 to 16 on the z-axis
+
+*/
 
 var params = {
-	// bunnyRadius: 5,
-	// bunnySphereDetail: 20,
-	// bunnyPositionY: 5,
-	// bunnyColor: new THREE.Color(0xFF7519),
-        bunnyStartOffset: 30,
+	fovy: 50,
+	cameraAdjustX: 50,
+	cameraAdjustY: 0,
+	sceneHeight: 250,
+	sceneDepth: 10,
+
+    bunnyStartOffset: 0,
 	pipeRadius: 15,
 	pipeCylDetail: 20,
 	topPipeHeights: [40, 60, 50, 80],
-	pipeColor: new THREE.Color(0x66FF66),
-	pipeEndColor: new THREE.Color(0x47B247),
+	pipeColor: new THREE.Color(0x66FF66), // light green
+	pipeEndColor: new THREE.Color(0x47B247), // dark green
+	pipeEndRadius: 16,
 	pipeEndHeight: 3,
-        pipeSpaceHeight: 90,
-	sceneHeight: 250,
-	sceneWidth: 100,
-	sceneDepth: 10,
-	pipeOffsetX: 130,
-	ambLightColor: 0x808080,
+    pipeSpaceHeight: 90, // space between top and bottom pipes (vertical)
+	pipeOffsetX: 130, // space between pipe sets (horizontal)
+
+	ambLightColor: 0x808080, // soft, light gray
+	directionalLightColor: 0xffffff, // white
 	lightIntensity: .3,
 	directionalX: 0, 
 	directionalY: 2,
@@ -27,6 +54,7 @@ var params = {
 
 var scene = new THREE.Scene();
 
+// spaces between the pipes times number of pipes
 var sceneWidth = params.topPipeHeights.length*params.pipeOffsetX;
 
 var renderer = new THREE.WebGLRenderer();
@@ -41,8 +69,8 @@ var canvas = TW.lastClickTarget;
 var canvasWidth = canvas.width;
 var canvasHeight = canvas.height;
 
-
-function myCamera(fovy,eye, at) {
+// creates a custom camera
+function myCamera(fovy, eye, at) {
 	var canvas = TW.lastClickTarget;
 	camera = new THREE.PerspectiveCamera( fovy, canvasWidth/canvasHeight, 1, 300);
 	camera.position.copy(eye);
@@ -50,26 +78,15 @@ function myCamera(fovy,eye, at) {
 	scene.add(camera);
 }
 
-//adjust camera to display scene with bunny on far left and zoomed in view of pipes
-var fovy = 50;
-var cameraAdjustX = 180;
-var cameraAdjustY = 0;
-// var eyeZ = Math.tan(fovy/2) * (params.sceneHeight);
- var eye = new THREE.Vector3(cameraAdjustX,cameraAdjustY,250);
- var at = new THREE.Vector3(cameraAdjustX,cameraAdjustY,0);
- myCamera(fovy,eye,at);
-
+//adjust camera to display scene with bunny on far left and zoomed in view 
+var eye = new THREE.Vector3(params.cameraAdjustX, params.cameraAdjustY, 250);
+var at = new THREE.Vector3(params.cameraAdjustX, params.cameraAdjustY, 0);
+myCamera(params.fovy, eye, at);
 render();
 
-// TW.cameraSetup(renderer, scene,
-// 	{minx: 0, maxx: sceneWidth,
-// 	miny: -params.sceneHeight/2, maxy: params.sceneHeight/2,
-// 	minz: -params.sceneDepth, maxz: params.sceneDepth});
-
-
+// returns a plane with a background image texture-mapped onto it
 function loadBackground(params) {
-    var planeGeom = new THREE.PlaneGeometry(sceneWidth+params.pipeRadius*2, params.sceneHeight+params.pipeRadius*2);
-    // var planeGeom = new THREE.PlaneGeometry(1000, 1000);
+    var planeGeom = new THREE.PlaneGeometry(sceneWidth*2+params.pipeRadius*2, params.sceneHeight*2+params.pipeRadius*2);
     var imageLoaded = false;
     var backgroundTexture = new THREE.ImageUtils.loadTexture( "/images/background-orig.jpg",
                                                          THREE.UVMapping,
@@ -84,13 +101,13 @@ function loadBackground(params) {
          map: backgroundTexture});
     
     var backgroundMesh = new THREE.Mesh( planeGeom, backgroundMat );
-    backgroundMesh.position.x = sceneWidth/2;
+    backgroundMesh.position.x = 0;
     backgroundMesh.position.z = -params.pipeRadius*2;
     console.log(backgroundMesh);
     return backgroundMesh;
 }
 
-/* build one single pipe */
+/* returns a single pipe object, made from cylinders */
 function buildPipe(params, pipeHeight) { 
 	var radius = params.pipeRadius;
     var cd  = params.pipeCylDetail;
@@ -108,7 +125,7 @@ function buildPipe(params, pipeHeight) {
 
     pipeMesh.position.set(0, height/2, 0); 
 
-    var pipeEndGeom = new THREE.CylinderGeometry(radius+1, radius+1, endHeight, cd);
+    var pipeEndGeom = new THREE.CylinderGeometry(params.pipeEndRadius, params.pipeEndRadius, endHeight, cd);
     var pipeEndMat = new THREE.MeshPhongMaterial( {color: params.pipeEndColor,
      												ambient: params.pipeEndColor,  
                                                     specular: 0xFFFFFF,
@@ -121,21 +138,22 @@ function buildPipe(params, pipeHeight) {
 	return pipe;
 }
 
-/* build 1 pipe set containing 1 top pipe and 1 bottom pipe 
-	pipeIndex changes to a different height in the array each call */
+/* calls buildPipe(params, pipeHeight)
+	returns 1 pipe set containing 1 top pipe and 1 bottom pipe 
+	takes in index of the pipe set currently building */
 function buildPipeSet(params, pipeIndex) {
 	var pipeSet = new THREE.Object3D();
 	var sceneHeight = params.sceneHeight;
 	var sceneHeightHalf = sceneHeight/2;
 
-	var pipeSpaceHeight = params.pipeSpaceHeight || 30; //random # gen priority 2
+	var pipeSpaceHeight = params.pipeSpaceHeight;
 	var topHeight = params.topPipeHeights[pipeIndex];
 	var bottomHeight = sceneHeight - topHeight - pipeSpaceHeight;
 
 	var topPipe = buildPipe(params, topHeight);
 	var bottomPipe = buildPipe(params, bottomHeight);
 
-	topPipe.rotateX(Math.PI);
+	topPipe.rotateX(Math.PI); // flips top pipe upside-down
 	topPipe.position.set(0, sceneHeightHalf, 0);
 
 	bottomPipe.position.set(0, -sceneHeightHalf, 0)
@@ -146,7 +164,7 @@ function buildPipeSet(params, pipeIndex) {
 	return pipeSet;
 }
 
-/* build all pipe sets, place all pipe sets */
+/* returns all 4 pipe sets spaced by pipeOffsetX */
 function buildAllPipes(params) {
 	pipeOffsetX = params.pipeOffsetX;
 	buildPipeSet(params, 0);
@@ -154,34 +172,31 @@ function buildAllPipes(params) {
 	for(pipeIndex in params.topPipeHeights) {
 		var pipeSet = buildPipeSet(params, pipeIndex);
 		pipeSet.position.x = ((++pipeIndex)*pipeOffsetX);
-		// console.log(pipeSet);
 		pipeSets.push(pipeSet);
-		// pipeSets.push(buildPipeSet(params, pipeIndex));
 	}
 	return pipeSets;
 }
 
-/* build bunny, all pipes, place on scene
-	add lights to the scene */
+/* adds and positions background plane, a bunny, all pipe sets, and 
+	lights to the scene */
 function buildScene(params, scene) {
 	var background = loadBackground(params);
 	scene.add(background);
 
-	var bunny = buildBunny();
+	var bunny = awangatangBunny();
         bunny.position.x = params.bunnyStartOffset;
 	scene.add(bunny);
 
 	var pipes = buildAllPipes(params);
-	// console.log(pipes);
 	for(pipeIndex in params.topPipeHeights) {
 		scene.add(pipes[pipeIndex]);
 	} 
 
-	var ambLight = new THREE.AmbientLight(params.ambLightColor); // soft white light 
+	var ambLight = new THREE.AmbientLight(params.ambLightColor);
 	scene.add(ambLight);
 
-	var directionalLight = new THREE.DirectionalLight( 0xffffff, params.lightIntensity );
-    directionalLight.name = "directional";
+	var directionalLight = new THREE.DirectionalLight(params.directionalLightColor,
+													  params.lightIntensity);
     directionalLight.position.set( params.directionalX, 
                                    params.directionalY, 
                                    params.directionalZ ); 
@@ -190,4 +205,3 @@ function buildScene(params, scene) {
 }	
 
 buildScene(params, scene);
-
