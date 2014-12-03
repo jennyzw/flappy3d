@@ -29,15 +29,14 @@ Contact us at jwang9@wellesley.edu and tang@wellesley.edu
  */ 
 
 function awangatangBunny() {
-
- 	var bunnyParams = {
-	bodyRadius: 10,
+	var bunnyParams = {
+	bodyRadius: 8,
 	bodyScale: 1.2,
-	headRadius: 8,
+	headRadius: 6,
 	sphereDetail: 20,
-	appRadius: 2,
+	appRadius: 1,
 	appScale: 4,
-	tailRadius: 4,
+	tailRadius: 2,
 	furColor: new THREE.Color(0xF0F0F0),
 	texture: new THREE.ImageUtils.loadTexture( "/images/fur.jpg",
                                                      THREE.UVMapping,
@@ -51,11 +50,34 @@ function awangatangBunny() {
 
 };
 
+//  	var bunnyParams = {
+// 	bodyRadius: 10,
+// 	bodyScale: 1.2,
+// 	headRadius: 8,
+// 	sphereDetail: 20,
+// 	appRadius: 2,
+// 	appScale: 4,
+// 	tailRadius: 4,
+// 	furColor: new THREE.Color(0xF0F0F0),
+// 	texture: new THREE.ImageUtils.loadTexture( "/images/fur.jpg",
+//                                                      THREE.UVMapping,
+//                                                      // onload event handler
+//                                                      function () {
+//                                                          console.log("image is loaded.");
+//                                                          imageLoaded = true;
+//                                                          render();
+//                                                      })
+	
+
+// };
+
 // creates a material for the bunny with fur texture
 var bunnyMat = new THREE.MeshPhongMaterial( {color: bunnyParams.furColor,
 											ambient: bunnyParams.furColor,
 											specular: 0xFFFFFF,
 											shininess: 5,
+											// transparent: true,
+        									// opacity: 0.5,
 											map: bunnyParams.texture} );
 /* returns complete bunny object with head & ears, body, feet, and tail */
 function buildBunny() {
