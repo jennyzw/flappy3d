@@ -28,34 +28,40 @@ All pipe sets: [pipeOffsetX-pipeEndRadius] to [pipeOffsetX-pipeEndRadius]+[pipeO
 
 var params = {
 	fovy: 50,
-	cameraAdjustX: 50,
+	cameraAdjustX: -200,
 	cameraAdjustY: 0,
 	sceneHeight: 250,
 	sceneDepth: 10,
 
-    bunnyStartOffset: 0,
+    bunnyStartOffset: -300,
 	pipeRadius: 15,
 	pipeCylDetail: 20,
-	topPipeHeights: [40, 60, 50, 80],
+	topPipeHeights: [40, 60, 50, 80, 20, 10, 30, 50],
 	pipeColor: new THREE.Color(0x66FF66), // light green
 	pipeEndColor: new THREE.Color(0x47B247), // dark green
 	pipeEndRadius: 16,
 	pipeEndHeight: 3,
     pipeSpaceHeight: 90, // space between top and bottom pipes (vertical)
-	pipeOffsetX: 130, // space between pipe sets (horizontal)
+	pipeOffsetX: 200, // space between pipe sets (horizontal)
+	numPipes: 5,
 
 	ambLightColor: 0x808080, // soft, light gray
 	directionalLightColor: 0xffffff, // white
 	lightIntensity: .3,
 	directionalX: 0, 
 	directionalY: 2,
-	directionalZ: 4 
+	directionalZ: 4,
+
+	deltaT: 0.0035,
+	bunnyDeltaY: 2,
+	bunnyJumpY: 8,
+	pipesDeltaX: 0.5
 };
 
 var scene = new THREE.Scene();
 
 // spaces between the pipes times number of pipes
-var sceneWidth = params.topPipeHeights.length*params.pipeOffsetX;
+var sceneWidth = params.numPipes*params.pipeOffsetX;
 
 var renderer = new THREE.WebGLRenderer();
 function render() {
@@ -72,14 +78,14 @@ var canvasHeight = canvas.height;
 // creates a custom camera
 function myCamera(fovy, eye, at) {
 	var canvas = TW.lastClickTarget;
-	camera = new THREE.PerspectiveCamera( fovy, canvasWidth/canvasHeight, 1, 300);
+	camera = new THREE.PerspectiveCamera( fovy, canvasWidth/canvasHeight, 1, 400);
 	camera.position.copy(eye);
 	camera.lookAt(at);
 	scene.add(camera);
 }
 
 //adjust camera to display scene with bunny on far left and zoomed in view 
-var eye = new THREE.Vector3(params.cameraAdjustX, params.cameraAdjustY, 250);
+var eye = new THREE.Vector3(params.cameraAdjustX, params.cameraAdjustY, 300);
 var at = new THREE.Vector3(params.cameraAdjustX, params.cameraAdjustY, 0);
 myCamera(params.fovy, eye, at);
 render();
@@ -107,88 +113,19 @@ function loadBackground(params) {
     return backgroundMesh;
 }
 
-/* returns a single pipe object, made from cylinders */
-function buildPipe(params, pipeHeight) { 
-	var radius = params.pipeRadius;
-    var cd  = params.pipeCylDetail;
-    var height = pipeHeight;
-    var endHeight = params.pipeEndHeight;
-
-    var pipe = new THREE.Object3D();
-
-    var pipeGeom = new THREE.CylinderGeometry(radius, radius, height, cd);
-    var pipeMat = new THREE.MeshPhongMaterial( {color: params.pipeColor,
-     											ambient: params.pipeColor,  
-                                                specular: 0xFFFFFF,
-                                                shininess: 5} );
-    var pipeMesh = new THREE.Mesh( pipeGeom, pipeMat );
-
-    pipeMesh.position.set(0, height/2, 0); 
-
-    var pipeEndGeom = new THREE.CylinderGeometry(params.pipeEndRadius, params.pipeEndRadius, endHeight, cd);
-    var pipeEndMat = new THREE.MeshPhongMaterial( {color: params.pipeEndColor,
-     												ambient: params.pipeEndColor,  
-                                                    specular: 0xFFFFFF,
-                                                    shininess: 5} );
-    var pipeEndMesh = new THREE.Mesh(pipeEndGeom, pipeEndMat);
-	pipeEndMesh.position.set(0, height-1, 0); 
-
-    pipe.add(pipeEndMesh)
-    pipe.add(pipeMesh);
-	return pipe;
-}
-
-/* calls buildPipe(params, pipeHeight)
-	returns 1 pipe set containing 1 top pipe and 1 bottom pipe 
-	takes in index of the pipe set currently building */
-function buildPipeSet(params, pipeIndex) {
-	var pipeSet = new THREE.Object3D();
-	var sceneHeight = params.sceneHeight;
-	var sceneHeightHalf = sceneHeight/2;
-
-	var pipeSpaceHeight = params.pipeSpaceHeight;
-	var topHeight = params.topPipeHeights[pipeIndex];
-	var bottomHeight = sceneHeight - topHeight - pipeSpaceHeight;
-
-	var topPipe = buildPipe(params, topHeight);
-	var bottomPipe = buildPipe(params, bottomHeight);
-
-	topPipe.rotateX(Math.PI); // flips top pipe upside-down
-	topPipe.position.set(0, sceneHeightHalf, 0);
-
-	bottomPipe.position.set(0, -sceneHeightHalf, 0)
-
-	pipeSet.add(topPipe);
-	pipeSet.add(bottomPipe);
-
-	return pipeSet;
-}
-
-/* returns all 4 pipe sets spaced by pipeOffsetX */
-function buildAllPipes(params) {
-	pipeOffsetX = params.pipeOffsetX;
-	buildPipeSet(params, 0);
-	var pipeSets = [];
-	for(pipeIndex in params.topPipeHeights) {
-		var pipeSet = buildPipeSet(params, pipeIndex);
-		pipeSet.position.x = ((++pipeIndex)*pipeOffsetX);
-		pipeSets.push(pipeSet);
-	}
-	return pipeSets;
-}
-
+var bunny, pipes;
 /* adds and positions background plane, a bunny, all pipe sets, and 
 	lights to the scene */
 function buildScene(params, scene) {
 	var background = loadBackground(params);
 	scene.add(background);
 
-	var bunny = awangatangBunny();
-        bunny.position.x = params.bunnyStartOffset;
+	bunny = awangatangBunny();
+    bunny.position.x = params.bunnyStartOffset;
 	scene.add(bunny);
 
-	var pipes = buildAllPipes(params);
-	for(pipeIndex in params.topPipeHeights) {
+	pipes = buildAllPipes(params.numPipes);
+	for(pipeIndex in pipes) {
 		scene.add(pipes[pipeIndex]);
 	} 
 
@@ -205,3 +142,94 @@ function buildScene(params, scene) {
 }	
 
 buildScene(params, scene);
+
+
+// State variables of the animation
+var animationState;
+ 
+function resetAnimationState() {
+    animationState = {
+        bunnyPosY: 0, // fall from initial height
+        pipePosX: 0,
+        time: 0
+    };
+}
+ 
+resetAnimationState();
+ 
+function firstState() {
+    resetAnimationState();
+    setBunnyPosition(0);
+    setPipesPosition(0);
+    render();
+}
+
+function setBunnyPosition(time) {
+	// console.log(bunny.position.y);
+	var updatedPos = animationState.bunnyPosY - time*params.bunnyDeltaY;
+	bunny.position.y = updatedPos;
+	// console.log(bunny.position.y);
+	console.log("bunny moved");
+	return updatedPos;
+}
+
+function setPipesPosition(time) {
+	var updatedPos = animationState.pipePosX - time*params.pipesDeltaX;
+	for(pipeIndex in pipes) {
+		console.log(pipes[pipeIndex].position.x);
+		pipes[pipeIndex].position.x = updatedPos + (pipeIndex)*params.pipeOffsetX;
+		console.log(pipes[pipeIndex].position.x);
+	} 
+	return updatedPos;
+}
+
+ 
+function updateState() {
+    // changes the time and everything in the state that depends on it
+    animationState.time += params.deltaT;
+    var time = animationState.time;
+    var bunnyPosY = setBunnyPosition(time);
+    var pipePosX = setPipesPosition(time);
+    console.log("time is now "+time+" and bunny is at height "+bunnyPosY +"and pipes are at position" + pipePosX);
+    animationState.bunnyPosY = bunnyPosY;
+    animationState.pipePosX = pipePosX;
+}
+                
+function oneStep() {
+    updateState();
+    render();
+}
+    
+ 
+var animationId = null;                // so we can cancel the animation if we want
+ 
+function animate(timestamp) {
+    oneStep();
+    animationId = requestAnimationFrame(animate);
+}
+ 
+function stopAnimation() {
+    if( animationId != null ) {
+        cancelAnimationFrame(animationId);
+    }
+}
+
+function oneJump() {
+	// bunny.position.y += params.bunnyJumpY;
+	animationState.bunnyPosY+= params.bunnyJumpY;
+}
+
+ 
+TW.setKeyboardCallback("0",firstState,"reset animation");
+TW.setKeyboardCallback("1",oneStep,"advance by one step");
+TW.setKeyboardCallback("g",animate,"go:  start animation");
+TW.setKeyboardCallback("s",stopAnimation,"stop animation");
+TW.setKeyboardCallback(" ",oneJump,"bunny jump");
+ 
+// var gui = new dat.GUI();
+// gui.add(guiParams,"ballRadius",0.1,3).onChange(function(){makeScene();TW.render();});
+// gui.add(guiParams,"deltaT",0.001,0.999).step(0.001);
+// gui.add(guiParams,"ballBouncePeriod",1,30).step(1);
+
+
+
