@@ -100,7 +100,7 @@ function buildAllPipes(numPipes) {
 
 	params.topPipeHeights = new Array(numPipes);
 	for(var i = 0; i < numPipes; i++) {
-		params.topPipeHeights[i] = getRandomInt(10, 90);
+		params.topPipeHeights[i] = getRandomInt(100, 240);
 	}
 
 	pipeOffsetX = params.pipeOffsetX;
