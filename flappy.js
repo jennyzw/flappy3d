@@ -41,7 +41,7 @@ var params = {
 	pipeEndColor: new THREE.Color(0x47B247), // dark green
 	pipeEndRadius: 26,
 	pipeEndHeight: 7,
-    pipeSpaceHeight: 120, // space between top and bottom pipes (vertical)
+    pipeSpaceHeight: 200, // space between top and bottom pipes (vertical)
 	pipeOffsetX: 300, // space between pipe sets (horizontal)
 	numPipes: 5,
 
@@ -144,6 +144,8 @@ function buildScene(params, scene) {
                                    params.directionalY, 
                                    params.directionalZ ); 
     scene.add(directionalLight);
+
+
 	render();
 }	
 
@@ -193,6 +195,26 @@ function getScore() {
 	return score;
 }
 
+function endText(win) {
+	var textGeom;
+	   var material = new THREE.MeshPhongMaterial({
+        color: 0x9900FF
+    });
+
+	if(win) {
+		textGeom = new THREE.TextGeometry('You win!', 
+			{size: 50, font: 'helvetiker'});
+	} else {
+		textGeom = new THREE.TextGeometry('You lose!', 
+			{size: 50, font: 'helvetiker'});
+	}
+	var textMesh = new THREE.Mesh(textGeom, material);
+	textMesh.position.set(-150, 0, 50);
+
+	scene.add(textMesh);
+	render();
+}
+
 var jumping = false;
  
 function updateState() {
@@ -231,20 +253,29 @@ function updateState() {
     for(var i = 0; i < pipeBoxArray.length; i++) {
     if (bunnyBox.isIntersectionBox(pipeBoxArray[i])) {
     	console.log("bunny/pipe intersect");
-    	params.bunnyDeltaY = 0;
-    	params.pipesDeltaX = 0;
-    	params.bunnyJumpY = 0;
+    	endText(false);
+    	window.cancelAnimationFrame(requestAnimationFrame());
+    	// params.bunnyDeltaY = 0;
+    	// params.pipesDeltaX = 0;
+    	// params.bunnyJumpY = 0;
     	}
     }
 
     // if bunny hits floor/ceiling
     if(bunnyBox.min.y <= (-params.sceneHeight) || bunnyBox.min.y >= (params.sceneHeight)) {
     	console.log("floor/ceiling die");
-    	params.bunnyDeltaY = 0;
-    	params.pipesDeltaX = 0;
-    	params.bunnyJumpY = 0;
+    	endText(false);
+    	window.cancelAnimationFrame(requestAnimationFrame());
+    	// params.bunnyDeltaY = 0;
+    	// params.pipesDeltaX = 0;
+    	// params.bunnyJumpY = 0;
     	
     }
+    if(score == params.numPipes) {
+    	endText(true);
+    	window.cancelAnimationFrame(requestAnimationFrame());
+    }
+
 }
 
 
