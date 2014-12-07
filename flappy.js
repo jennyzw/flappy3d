@@ -231,13 +231,18 @@ function updateState() {
     for(var i = 0; i < pipeBoxArray.length; i++) {
     if (bunnyBox.isIntersectionBox(pipeBoxArray[i])) {
     	console.log("bunny/pipe intersect");
-    	stopAnimation;
+    	params.bunnyDeltaY = 0;
+    	params.pipesDeltaX = 0;
+    	params.bunnyJumpY = 0;
     	}
     }
 
     // if bunny hits floor/ceiling
     if(bunnyBox.min.y <= (-params.sceneHeight) || bunnyBox.min.y >= (params.sceneHeight)) {
     	console.log("floor/ceiling die");
+    	params.bunnyDeltaY = 0;
+    	params.pipesDeltaX = 0;
+    	params.bunnyJumpY = 0;
     	
     }
 }
