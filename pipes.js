@@ -17,19 +17,6 @@ V 2.0:
 
 */
 
-var params = {
-    bunnyStartOffset: 0,
-	pipeRadius: 15,
-	pipeCylDetail: 20,
-	topPipeHeights: [40, 60, 50, 80, 20, 10, 30, 50],
-	pipeColor: new THREE.Color(0x66FF66), // light green
-	pipeEndColor: new THREE.Color(0x47B247), // dark green
-	pipeEndRadius: 16,
-	pipeEndHeight: 3,
-    pipeSpaceHeight: 90, // space between top and bottom pipes (vertical)
-	pipeOffsetX: 200, // space between pipe sets (horizontal)
-};
-
 // Returns a random integer between min (included) and max (excluded)
 // Using Math.round() will give you a non-uniform distribution!
 // function from MDN (https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random)
@@ -37,6 +24,8 @@ function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
 }
 
+
+var pipeBoxArray = new Array();
 /* returns a single pipe object, made from cylinders */
 function buildPipe(params, pipeHeight) { 
 	var radius = params.pipeRadius;
@@ -65,6 +54,12 @@ function buildPipe(params, pipeHeight) {
 
     pipe.add(pipeEndMesh)
     pipe.add(pipeMesh);
+
+    var pipeBox = new THREE.Box3();
+	pipeBox.setFromObject(pipe);
+	pipeBoxArray.push(pipeBox); // populates pipeBoxArray with bounding boxes
+	// for each top/bottom pipe of pipe set
+
 	return pipe;
 }
 
@@ -82,6 +77,8 @@ function buildPipeSet(params, pipeIndex) {
 
 	var topPipe = buildPipe(params, topHeight);
 	var bottomPipe = buildPipe(params, bottomHeight);
+	topPipe.name = "topSeg";
+	bottomPipe.name = "bottomSeg";
 
 	topPipe.rotateX(Math.PI); // flips top pipe upside-down
 	topPipe.position.set(0, sceneHeightHalf, 0);

@@ -40,7 +40,7 @@ var params = {
 	pipeColor: new THREE.Color(0x66FF66), // light green
 	pipeEndColor: new THREE.Color(0x47B247), // dark green
 	pipeEndRadius: 26,
-	pipeEndHeight: 3,
+	pipeEndHeight: 7,
     pipeSpaceHeight: 120, // space between top and bottom pipes (vertical)
 	pipeOffsetX: 300, // space between pipe sets (horizontal)
 	numPipes: 5,
@@ -78,7 +78,7 @@ var canvasHeight = canvas.height;
 // creates a custom camera
 function myCamera(fovy, eye, at) {
 	var canvas = TW.lastClickTarget;
-	camera = new THREE.PerspectiveCamera( fovy, canvasWidth/canvasHeight, 1, 600);
+	camera = new THREE.PerspectiveCamera( fovy, canvasWidth/canvasHeight, 1, 550);
 	camera.position.copy(eye);
 	camera.lookAt(at);
 	scene.add(camera);
@@ -109,11 +109,12 @@ function loadBackground(params) {
     var backgroundMesh = new THREE.Mesh( planeGeom, backgroundMat );
     backgroundMesh.position.x = 0;
     backgroundMesh.position.z = -params.pipeRadius*2;
-    console.log(backgroundMesh);
     return backgroundMesh;
 }
 
 var bunny, pipes;
+var bunnyBox;
+var pipeBoxArray = new Array();
 /* adds and positions background plane, a bunny, all pipe sets, and 
 	lights to the scene */
 function buildScene(params, scene) {
@@ -124,10 +125,14 @@ function buildScene(params, scene) {
     bunny.position.x = params.bunnyStartOffset;
     bunny.scale.set(2, 2, 2); // enlarge bunny
 	scene.add(bunny);
+	bunnyBox = new THREE.Box3();
+	bunnyBox.setFromObject(bunny);
+	//console.log(bunnyBox.size());
 
 	pipes = buildAllPipes(params.numPipes);
 	for(pipeIndex in pipes) {
 		scene.add(pipes[pipeIndex]);
+
 	} 
 
 	var ambLight = new THREE.AmbientLight(params.ambLightColor);
@@ -177,11 +182,15 @@ function setBunnyPosition(time) {
 function setPipesPosition(time) {
 	var updatedPos = animationState.pipePosX - params.pipesDeltaX;
 	for(pipeIndex in pipes) {
-		console.log(pipes[pipeIndex].position.x);
 		pipes[pipeIndex].position.x = updatedPos + (pipeIndex)*params.pipeOffsetX;
-		console.log(pipes[pipeIndex].position.x);
 	} 
 	return updatedPos;
+}
+
+function getScore() {
+	var score = Math.ceil((animationState.pipePosX/params.pipeOffsetX))*-1;
+	console.log(score);
+	return score;
 }
 
 var jumping = false;
@@ -202,7 +211,38 @@ function updateState() {
     console.log("time is now "+time+" and bunny is at height "+bunnyPosY +"and pipes are at position" + pipePosX);
     animationState.bunnyPosY = bunnyPosY;
     animationState.pipePosX = pipePosX;
+
+    // moves bunny's box along with bunny
+    bunnyBox.setFromObject(bunny);
+
+    // moves pipes' bounding boxes along w/ pipes
+    for(var i = 0; i < pipes.length; i++) {
+    	var currentPipeSet = pipes[i];
+    	var topSeg = pipes[i].getObjectByName( "topSeg" );
+    	var bottomSeg = pipes[i].getObjectByName( "bottomSeg" );
+    	pipeBoxArray[i*2].setFromObject(topSeg);
+    	pipeBoxArray[(i*2)+1].setFromObject(bottomSeg);
+    }
+
+    var score = getScore();
+    console.log(score);
+
+    // if bunny hits pipe
+    for(var i = 0; i < pipeBoxArray.length; i++) {
+    if (bunnyBox.isIntersectionBox(pipeBoxArray[i])) {
+    	console.log("bunny/pipe intersect");
+    	stopAnimation;
+    	}
+    }
+
+    // if bunny hits floor/ceiling
+    if(bunnyBox.min.y <= (-params.sceneHeight) || bunnyBox.min.y >= (params.sceneHeight)) {
+    	console.log("floor/ceiling die");
+    	
+    }
 }
+
+
                 
 function oneStep() {
     updateState();

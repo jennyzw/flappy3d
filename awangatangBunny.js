@@ -33,12 +33,13 @@ function awangatangBunny() {
 	bodyRadius: 8,
 	bodyScale: 1.2,
 	headRadius: 6,
-	sphereDetail: 20,
+	sphereDetail: 10,
 	appRadius: 1,
-	appScale: 4,
+	earScale: 6,
+	feetScale: 3,
 	tailRadius: 2,
 	furColor: new THREE.Color(0xF0F0F0),
-	texture: new THREE.ImageUtils.loadTexture( "/images/fur.jpg",
+	texture: new THREE.ImageUtils.loadTexture( "/images/rainbow.jpg",
                                                      THREE.UVMapping,
                                                      // onload event handler
                                                      function () {
@@ -50,26 +51,6 @@ function awangatangBunny() {
 
 };
 
-//  	var bunnyParams = {
-// 	bodyRadius: 10,
-// 	bodyScale: 1.2,
-// 	headRadius: 8,
-// 	sphereDetail: 20,
-// 	appRadius: 2,
-// 	appScale: 4,
-// 	tailRadius: 4,
-// 	furColor: new THREE.Color(0xF0F0F0),
-// 	texture: new THREE.ImageUtils.loadTexture( "/images/fur.jpg",
-//                                                      THREE.UVMapping,
-//                                                      // onload event handler
-//                                                      function () {
-//                                                          console.log("image is loaded.");
-//                                                          imageLoaded = true;
-//                                                          render();
-//                                                      })
-	
-
-// };
 
 // creates a material for the bunny with fur texture
 var bunnyMat = new THREE.MeshPhongMaterial( {color: bunnyParams.furColor,
@@ -135,7 +116,7 @@ function buildAppendage() {
 
 	var appMesh = new THREE.Mesh(appGeom, bunnyMat);
 
-	appMesh.scale.y = bunnyParams.appScale;
+	// appMesh.scale.y = bunnyParams.appScale;
 	return appMesh;
 }
 
@@ -150,6 +131,7 @@ function buildEarSet() {
 	earRight.position.x = bunnyParams.headRadius/4;
 	ears.add(earLeft);
 	ears.add(earRight);
+	ears.scale.y = bunnyParams.earScale;
 	return ears;
 }
 
@@ -160,13 +142,16 @@ function buildEarSet() {
 function buildFeetSet() {
 	var feet = new THREE.Object3D();
 	var footLeft = buildAppendage();
+	footLeft.scale.y = bunnyParams.feetScale;
 	var footRight = buildAppendage();
+	footRight.scale.y = bunnyParams.feetScale;
 	footLeft.rotation.z = Math.PI/2;
 	footRight.rotation.z = Math.PI/2;
 	footLeft.position.x = -(bunnyParams.bodyRadius*bunnyParams.bodyScale)/2;
 	footRight.position.x = (bunnyParams.bodyRadius*bunnyParams.bodyScale)/2;
 	feet.add(footLeft);
 	feet.add(footRight);
+
 	return feet;
 }
 
