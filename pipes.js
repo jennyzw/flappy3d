@@ -38,7 +38,7 @@ function buildPipe(params, pipeHeight) {
     var pipeGeom = new THREE.CylinderGeometry(radius, radius, height, cd);
     var pipeMat = new THREE.MeshPhongMaterial( {color: params.pipeColor,
      											ambient: params.pipeColor,  
-                                                specular: 0xFFFFFF,
+                                                specular: 0xCCCCCC,
                                                 shininess: 5} );
     var pipeMesh = new THREE.Mesh( pipeGeom, pipeMat );
 

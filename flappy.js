@@ -37,15 +37,15 @@ var params = {
 	pipeRadius: 25,
 	pipeCylDetail: 20,
 	topPipeHeights: [140, 160, 150, 80, 20, 10, 30, 50],
-	pipeColor: new THREE.Color(0x66FF66), // light green
-	pipeEndColor: new THREE.Color(0x47B247), // dark green
+	pipeColor: new THREE.Color(0x339933), // light green
+	pipeEndColor: new THREE.Color(0x246B24), // dark green
 	pipeEndRadius: 26,
 	pipeEndHeight: 7,
     pipeSpaceHeight: 200, // space between top and bottom pipes (vertical)
 	pipeOffsetX: 300, // space between pipe sets (horizontal)
 	numPipes: 5,
 
-	ambLightColor: 0x808080, // soft, light gray
+	ambLightColor: 0xffffff, // soft, light gray
 	directionalLightColor: 0xffffff, // white
 	lightIntensity: .3,
 	directionalX: 0, 
@@ -55,7 +55,10 @@ var params = {
 	deltaT: 0.0035,
 	bunnyDeltaY: 2,
 	bunnyJumpY: 40,
-	pipesDeltaX: 1
+	pipesDeltaX: 1,
+
+	scorePosX: -300,
+	endTextPosX: -600
 };
 
 var scene = new THREE.Scene();
@@ -197,19 +200,21 @@ function getScore() {
 
 function endText(win) {
 	var textGeom;
-	   var material = new THREE.MeshPhongMaterial({
-        color: 0x9900FF
+	var material = new THREE.MeshPhongMaterial({
+        color: 0xFF33CC,
+        ambient: 0xFF33CC,
+        specular: 0xffffff
     });
 
 	if(win) {
 		textGeom = new THREE.TextGeometry('You win!', 
-			{size: 50, font: 'helvetiker'});
+			{size: 70, height: 0, weight: "bold", thickness: 10, font: 'optimer'});
 	} else {
-		textGeom = new THREE.TextGeometry('You lose!', 
-			{size: 50, font: 'helvetiker'});
+		textGeom = new THREE.TextGeometry('GAME OVER', 
+			{size: 70, height: 0, weight: "bold", thickness: 10, font: 'optimer'});
 	}
 	var textMesh = new THREE.Mesh(textGeom, material);
-	textMesh.position.set(-150, 0, 50);
+	textMesh.position.set(params.endTextPosX, 0, 10);
 
 	scene.add(textMesh);
 	render();
@@ -230,7 +235,7 @@ function updateState() {
     	jumping = false;
     }
     var pipePosX = setPipesPosition(time);
-    console.log("time is now "+time+" and bunny is at height "+bunnyPosY +"and pipes are at position" + pipePosX);
+    // console.log("time is now "+time+" and bunny is at height "+bunnyPosY +"and pipes are at position" + pipePosX);
     animationState.bunnyPosY = bunnyPosY;
     animationState.pipePosX = pipePosX;
 
@@ -247,7 +252,24 @@ function updateState() {
     }
 
     var score = getScore();
-    console.log(score);
+    if(score<=0) {
+		score = 0;
+	}
+
+    var textGeom;
+	   var material = new THREE.MeshBasicMaterial({
+        color: 0xFF33CC
+    });
+	   textGeom = new THREE.TextGeometry(score, 
+			{size: 50, height: 0, weight: "bold", font: 'optimer'});
+	var textMesh = new THREE.Mesh(textGeom, material);
+	textMesh.position.set(params.scorePosX, 100, 50);
+	textMesh.name = "score";
+	scene.remove(scene.getObjectByName("score"));
+
+	scene.add(textMesh);
+
+	
 
     // if bunny hits pipe
     for(var i = 0; i < pipeBoxArray.length; i++) {

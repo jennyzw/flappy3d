@@ -1,0 +1,20 @@
+1. explain
+2. demo
+3. issues/improvements
+
+topics
+- geom (bunny, pipes, background)
+- animation bunny moving down, pipes moving left
+- user interaction bunny jump
+- positioning pipes
+
+issues
+- jumping while falling
+- intersect bounding boxes
+- moving bounding boxes along with animation
+- getting the score
+- stopping animation
+- importing threejs fonts
+
+improvements
+- 
