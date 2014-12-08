@@ -1,10 +1,11 @@
 /* 
 Tiffany Ang, Jenny Wang
-11/19/14 
+12/07/14
 CS 307
 
 creates a 3D scene of flappy bird, with a bunny instead of a bird 
-Current status: Single static frame of game
+Current status (11/19): Single static frame of game
+Current status (12/7): Working game
 
 Dimensions of objects
 Whole scene: -520 to 520 on the x-axis, -250 to 250 on the y-axis
@@ -33,6 +34,7 @@ var params = {
 	sceneHeight: 500,
 	sceneDepth: 10,
 
+	bunnyScale: 2,
     bunnyStartOffset: -300,
 	pipeRadius: 25,
 	pipeCylDetail: 20,
@@ -116,7 +118,8 @@ function loadBackground(params) {
 }
 
 var bunny, pipes;
-var bunnyBox;
+// bounding boxes around bunny and pipes
+var bunnyBox; 
 var pipeBoxArray = new Array();
 /* adds and positions background plane, a bunny, all pipe sets, and 
 	lights to the scene */
@@ -126,17 +129,16 @@ function buildScene(params, scene) {
 
 	bunny = awangatangBunny();
     bunny.position.x = params.bunnyStartOffset;
-    bunny.scale.set(2, 2, 2); // enlarge bunny
+    // enlarge bunny
+    bunny.scale.set(params.bunnyScale, params.bunnyScale, params.bunnyScale); 
     bunny.name = "rabbit";
 	scene.add(bunny);
 	bunnyBox = new THREE.Box3();
 	bunnyBox.setFromObject(bunny);
-	//console.log(bunnyBox.size());
 
 	pipes = buildAllPipes(params.numPipes);
 	for(pipeIndex in pipes) {
 		scene.add(pipes[pipeIndex]);
-
 	} 
 
 	var ambLight = new THREE.AmbientLight(params.ambLightColor);
@@ -149,14 +151,11 @@ function buildScene(params, scene) {
                                    params.directionalZ ); 
     scene.add(directionalLight);
 
-
 	render();
 }	
 
 buildScene(params, scene);
 
-
-// State variables of the animation
 var animationState;
  
 function resetAnimationState() {
@@ -176,15 +175,15 @@ function firstState() {
     render();
 }
 
+// decreases bunny's y position
 function setBunnyPosition(time) {
-	// console.log(bunny.position.y);
 	var updatedPos = animationState.bunnyPosY - params.bunnyDeltaY;
 	bunny.position.y = updatedPos;
-	// console.log(bunny.position.y);
 	console.log("bunny moved");
 	return updatedPos;
 }
 
+// decreases pipes' x position
 function setPipesPosition(time) {
 	var updatedPos = animationState.pipePosX - params.pipesDeltaX;
 	for(pipeIndex in pipes) {
@@ -193,12 +192,34 @@ function setPipesPosition(time) {
 	return updatedPos;
 }
 
+// returns number of pipes passed
 function getScore() {
 	var score = Math.ceil((animationState.pipePosX/params.pipeOffsetX))*-1;
-	console.log(score);
+	// prints 0 for any no pipes passed
+    
+    if(score<=0) {
+		score = 0;
+	}
+	// creates text geometry of score
+	var textGeom;
+	var material = new THREE.MeshBasicMaterial({
+        color: 0x000000
+    });
+	   textGeom = new THREE.TextGeometry(score, 
+			{size: 60, height: 0, weight: "bold", font: 'audimat mono'});
+	var textMesh = new THREE.Mesh(textGeom, material);
+	textMesh.position.set(params.scorePosX, 100, params.pipeEndRadius); // in front of pipes
+	textMesh.name = "score";
+	scene.remove(scene.getObjectByName("score"));
+
+	scene.add(textMesh);
+
+
+
 	return score;
 }
 
+// adds a text geometry of win status to the scene
 function endText(win) {
 	var textGeom;
 	var material = new THREE.MeshBasicMaterial({
@@ -206,11 +227,13 @@ function endText(win) {
     });
 
 	if(win) {
-		textGeom = new THREE.TextGeometry('You win!', 
-			{size: 70, height: 0, weight: "bold", thickness: 10, font: 'bitstream vera sans mono'});
+		textGeom = new THREE.TextGeometry('YOU WIN', 
+			{size: 70, height: 0, weight: "bold", 
+			font: 'bitstream vera sans mono'});
 	} else {
 		textGeom = new THREE.TextGeometry('GAME OVER', 
-			{size: 70, height: 0, weight: "bold", thickness: 10, font: 'bitstream vera sans mono'});
+			{size: 70, height: 0, weight: "bold", 
+			font: 'bitstream vera sans mono'});
 	}
 	var textMesh = new THREE.Mesh(textGeom, material);
 	textMesh.position.set(params.endTextPosX, -20, params.pipeEndRadius); // in front of pipes
@@ -225,7 +248,8 @@ function updateState() {
     // changes the time and everything in the state that depends on it
     animationState.time += params.deltaT;
     var time = animationState.time;
-    if( !jumping) {
+    // stops bunny from falling when it is jumping
+    if(!jumping) {
     	var bunnyPosY = setBunnyPosition(time);
     }
     else {
@@ -234,7 +258,6 @@ function updateState() {
     	jumping = false;
     }
     var pipePosX = setPipesPosition(time);
-    // console.log("time is now "+time+" and bunny is at height "+bunnyPosY +"and pipes are at position" + pipePosX);
     animationState.bunnyPosY = bunnyPosY;
     animationState.pipePosX = pipePosX;
 
@@ -251,26 +274,8 @@ function updateState() {
     }
 
     var score = getScore();
-    if(score<=0) {
-		score = 0;
-	}
 
-    var textGeom;
-	   var material = new THREE.MeshBasicMaterial({
-        color: 0xFFFFFF
-    });
-	   textGeom = new THREE.TextGeometry(score, 
-			{size: 60, height: 0, weight: "bold", font: 'audimat mono'});
-	var textMesh = new THREE.Mesh(textGeom, material);
-	textMesh.position.set(params.scorePosX, 100, params.pipeEndRadius); // in front of pipes
-	textMesh.name = "score";
-	scene.remove(scene.getObjectByName("score"));
-
-	scene.add(textMesh);
-
-	
-
-    // if bunny hits pipe, end game, print game over text
+    // if bunny hits pipe, end game, print "game over" text
     for(var i = 0; i < pipeBoxArray.length; i++) {
     if (bunnyBox.isIntersectionBox(pipeBoxArray[i])) {
     	console.log("bunny/pipe intersect");
@@ -280,14 +285,15 @@ function updateState() {
     	}
     }
 
-    // if bunny hits floor/ceiling, end game, print game over text
+    // if bunny hits floor/ceiling, end game, print "game over" text
     if(bunnyBox.min.y <= (-params.sceneHeight) || bunnyBox.min.y >= (params.sceneHeight)) {
     	console.log("floor/ceiling die");
     	//bunny fading goes here
     	endText(false);
     	window.cancelAnimationFrame(requestAnimationFrame());
-    	
     }
+
+    // win, print "you win" text and end game
     if(score == params.numPipes) {
     	// when win, remove pipes from scene
     	for(pipeIndex in pipes) {
@@ -296,16 +302,12 @@ function updateState() {
     	endText(true);
     	window.cancelAnimationFrame(requestAnimationFrame());
     }
-
 }
-
-
                 
 function oneStep() {
     updateState();
     render();
-}
-    
+}  
  
 var animationId = null;   // so we can cancel the animation if we want
  
@@ -320,11 +322,11 @@ function stopAnimation() {
     }
 }
 
+// when space bar is pressed, bunny jumping is set to true
 function oneJump() {
 	jumping = true;
 }
 
- 
 TW.setKeyboardCallback("0",firstState,"reset animation");
 TW.setKeyboardCallback("1",oneStep,"advance by one step");
 TW.setKeyboardCallback("g",animate,"go:  start animation");

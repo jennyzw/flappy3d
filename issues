@@ -3,19 +3,26 @@
 3. issues/improvements
 
 topics
-- geom (bunny, pipes, background)
-- animation bunny moving down, pipes moving left
+- geom (bunny, pipes, background) (J)
+- positioning pipes, random # height
+random top height, subtract from whole scene height to get bottom height
+
+- animation bunny moving down, pipes moving left (TAng)
 - user interaction bunny jump
-- positioning pipes
+
+~*~*~*~DEMO~*~*~*~
 
 issues
-- jumping while falling
-- intersect bounding boxes
-- moving bounding boxes along with animation
-- getting the score
-- stopping animation
-- importing threejs fonts
+- jumping while falling (TAng)
+- intersect bounding boxes (J)
+iterate through array of pipe sets, got top/bottom objects by name, created boxes for each of them
 
-improvements
-- smoother jumping
-- move bunny x as well
+- moving bounding boxes along with animation (TAng)
+
+- getting the score (J)
+calculated score by counting how many pipes passed (some math)
+- UNSOLVED ISSUE: stopping animation
+
+improvements for version 2, mostly aesthetic and UI things
+- smoother jumping (J)
+- harder level ideas (TAng)
