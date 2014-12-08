@@ -99,7 +99,7 @@ render();
 function loadBackground(params) {
     var planeGeom = new THREE.PlaneGeometry(sceneWidth*2+params.pipeRadius*2, params.sceneHeight*2+params.pipeRadius*2);
     var imageLoaded = false;
-    var backgroundTexture = new THREE.ImageUtils.loadTexture( "/images/background-orig.jpg",
+    var backgroundTexture = new THREE.ImageUtils.loadTexture( "images/background-orig.jpg",
                                                          THREE.UVMapping,
                                                          // onload event handler
                                                          function () {
