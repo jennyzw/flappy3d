@@ -57,7 +57,11 @@ var params = {
 	bunnyDeltaY: 2,
 	bunnyDeltaZ: 2,
 	bunnyJumpY: 40,
-	pipesDeltaX: 1.5,
+	bunnyTiltDown: TW.degrees2radians(-2),
+	bunnyTiltUp: TW.degrees2radians(50),
+	tiltDownMax: -Math.PI/8,
+	tiltUpMax: 0,
+	pipesDeltaX: 2,
 
 	scorePosX: -300,
 	endTextPosX: -500
@@ -126,8 +130,7 @@ function buildScene(params, scene) {
 	sphereBackground.scale.x = -1;
 	scene.add(sphereBackground);
 
-	scene.fog = new THREE.FogExp2( 0xD6EBFF, 0.0008 );
-	// scene.fog = new THREE.Fog( 0xD6EBFF, sceneWidth - 50, -400 );
+	// scene.fog = new THREE.FogExp2( 0xD6EBFF, 0.0008 );
 
 	bunny = awangatangBunny();
     bunny.position.x = params.bunnyStartOffset;
@@ -307,12 +310,20 @@ function updateState() {
     animationState.time += params.deltaT;
     var time = animationState.time;
     // stops bunny from falling when it is jumping
+    // tilts bunny down when falling, up when jumping
     if(!jumping) {
     	var bunnyPosY = setBunnyPosition(time);
+    	if(bunny.rotation.z > params.tiltDownMax) {
+    		bunny.rotation.z += params.bunnyTiltDown;
+    	}
     }
     else {
     	var bunnyPosY = animationState.bunnyPosY+ params.bunnyJumpY;
     	bunny.position.y = bunnyPosY;
+    	if(bunny.rotation.z < params.tiltUpMax) {
+    		bunny.rotation.z += params.bunnyTiltUp;
+    	}
+    	console.log(bunny.rotation.z);
     	jumping = false;
     }
     var pipePosX = setPipesPosition(time);

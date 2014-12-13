@@ -53,10 +53,10 @@ function awangatangBunny() {
 
 
 // creates a material for the bunny with fur texture
-var bunnyMat = new THREE.MeshPhongMaterial( {color: bunnyParams.furColor,
-											ambient: bunnyParams.furColor,
+var bunnyMat = new THREE.MeshLambertMaterial( {color: bunnyParams.furColor,
+											ambient: 0xFFE0FF,
 											specular: 0xFFFFFF,
-											shininess: 5,
+											shininess: 0,
 											// transparent: true,
         									// opacity: 0.5,
 											map: bunnyParams.texture} );
