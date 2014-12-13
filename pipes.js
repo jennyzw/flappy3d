@@ -68,7 +68,7 @@ function buildPipe(params, pipeHeight) {
 	takes in index of the pipe set currently building */
 function buildPipeSet(params, pipeIndex) {
 	var pipeSet = new THREE.Object3D();
-	var sceneHeight = params.sceneHeight;
+	var sceneHeight = sceneWidth;
 	var sceneHeightHalf = sceneHeight/2;
 
 	var pipeSpaceHeight = params.pipeSpaceHeight;
@@ -94,10 +94,12 @@ function buildPipeSet(params, pipeIndex) {
 /* returns all 4 pipe sets spaced by pipeOffsetX */
 function buildAllPipes(numPipes) {
 	// generate random pipe heights
+	var min = 600;
+	var max = 750;
 
 	params.topPipeHeights = new Array(numPipes);
 	for(var i = 0; i < numPipes; i++) {
-		params.topPipeHeights[i] = getRandomInt(100, 240);
+		params.topPipeHeights[i] = getRandomInt(min, max);
 	}
 
 	pipeOffsetX = params.pipeOffsetX;

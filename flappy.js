@@ -30,9 +30,8 @@ All pipe sets: [pipeOffsetX-pipeEndRadius] to [pipeOffsetX-pipeEndRadius]+[pipeO
 var params = {
 	fovy: 50,
 	cameraAdjustX: -200,
+	cameraAdjustX2: 300,
 	cameraAdjustY: 0,
-	sceneHeight: 500,
-	sceneDepth: 10,
 
 	bunnyScale: 2,
     bunnyStartOffset: -300,
@@ -56,6 +55,7 @@ var params = {
 
 	deltaT: 0.0035,
 	bunnyDeltaY: 2,
+	bunnyDeltaZ: 2,
 	bunnyJumpY: 40,
 	pipesDeltaX: 1.5,
 
@@ -96,34 +96,13 @@ myCamera(params.fovy, eye, at);
 render();
 
 function changeView() {
-     scene.remove(camera);
-	var eye = new THREE.Vector3(params.cameraAdjustX-300, params.cameraAdjustY, 500);
+    scene.remove(camera);
+	var eye = new THREE.Vector3(params.cameraAdjustX-params.cameraAdjustX2,
+								params.cameraAdjustY, 500);
 	var at = new THREE.Vector3(params.cameraAdjustX, params.cameraAdjustY, 0);
 	myCamera(params.fovy, eye, at);
     render();
-  }
-
-// returns a plane with a background image texture-mapped onto it
-function loadBackground(params) {
-    var planeGeom = new THREE.PlaneGeometry(sceneWidth*2+params.pipeRadius*2, params.sceneHeight*2+params.pipeRadius*2);
-    var imageLoaded = false;
-    var backgroundTexture = new THREE.ImageUtils.loadTexture( "images/background.jpg",
-                                                         THREE.UVMapping,
-                                                         // onload event handler
-                                                         function () {
-                                                             console.log("image is loaded.");
-                                                             imageLoaded = true;
-                                                             render();
-                                                         });
-    var backgroundMat = new THREE.MeshBasicMaterial(
-        {color: THREE.ColorKeywords.white,
-         map: backgroundTexture});
-    
-    var backgroundMesh = new THREE.Mesh( planeGeom, backgroundMat );
-    backgroundMesh.position.x = 0;
-    backgroundMesh.position.z = -params.pipeRadius*2;
-    return backgroundMesh;
-}
+ }
 
 var bunny, pipes;
 // bounding boxes around bunny and pipes
@@ -142,13 +121,13 @@ function buildScene(params, scene) {
  		new THREE.SphereGeometry(sceneWidth, 50, 50),
   		new THREE.MeshBasicMaterial({
     		map: texture
-  })
-);
+  		})
+	);
 	sphereBackground.scale.x = -1;
 	scene.add(sphereBackground);
 
-	var background = loadBackground(params);
-	// scene.add(background);
+	scene.fog = new THREE.FogExp2( 0xD6EBFF, 0.0008 );
+	// scene.fog = new THREE.Fog( 0xD6EBFF, sceneWidth - 50, -400 );
 
 	bunny = awangatangBunny();
     bunny.position.x = params.bunnyStartOffset;
@@ -179,11 +158,12 @@ function buildScene(params, scene) {
 
 buildScene(params, scene);
 
-var animationState;
- 
+var onLevel2 = false;
+
 function resetAnimationState() {
     animationState = {
         bunnyPosY: 0, // fall from initial height
+        bunnyPosZ: 0,
         pipePosX: params.pipeOffsetX,
         time: 0
     };
@@ -193,6 +173,8 @@ resetAnimationState();
  
 function firstState() {
     resetAnimationState();
+    scene.remove(scene.getObjectByName("endTextMesh"));
+    scene.remove(scene.getObjectByName("scoreText"));
     setBunnyPosition(0);
     setPipesPosition(0);
     render();
@@ -215,6 +197,41 @@ function setPipesPosition(time) {
 	return updatedPos;
 }
 
+function level2() {
+	onLevel2 = true;
+	
+	firstState();
+	//change camera view
+	changeView();
+
+	// rotate text
+	var endTextMesh = scene.getObjectByName("endTextMesh");
+	console.log(scene.getObjectByName("endTextMesh"));
+	// endText.rotation.y = Math.PI/2;
+	var scoreTextMesh = scene.getObjectByName("scoreText");
+	console.log(scoreTextMesh);
+	// scoreText.rotation.y = Math.PI/2;
+
+	//remove pipes
+	for(pipeIndex in pipes) {
+		scene.remove(pipes[pipeIndex]);
+	} 
+
+	//rebuild all pipe sets
+	pipes = buildAllPipes(params.numPipes);
+
+	var min = -80;
+	var max = 80;
+
+	//setting random z position for each pipeset in pipes
+	for(pipeIndex in pipes) {
+		var randomZ = getRandomInt(min,max);
+		pipes[pipeIndex].position.z = randomZ;
+		scene.add(pipes[pipeIndex]);
+	} 
+}
+
+
 // returns number of pipes passed
 function getScore() {
 	var score = Math.ceil((animationState.pipePosX/params.pipeOffsetX))*-1;
@@ -232,15 +249,17 @@ function getScore() {
 			{size: 60, height: 0, weight: "bold", font: 'audimat mono'});
 	var textMesh = new THREE.Mesh(textGeom, material);
 	textMesh.position.set(params.scorePosX, 100, params.pipeEndRadius); // in front of pipes
-	textMesh.name = "score";
-	scene.remove(scene.getObjectByName("score"));
-
+	textMesh.name = "scoreText";
+	scene.remove(scene.getObjectByName("scoreText"));
+	if(onLevel2) {
+		textMesh.rotation.y = (-Math.PI/6);
+	}
 	scene.add(textMesh);
-
-
 
 	return score;
 }
+
+
 
 // adds a text geometry of win status to the scene
 function endText(win) {
@@ -250,20 +269,24 @@ function endText(win) {
     });
 
 	if(win) {
-		textGeom = new THREE.TextGeometry('YOU WIN', 
-			{size: 70, height: 0, weight: "bold", 
+		textGeom = new THREE.TextGeometry('YOU WIN, press 2 to move on', 
+			{size: 35, height: 0, weight: "bold", 
 			font: 'bitstream vera sans mono'});
 	} else {
-		textGeom = new THREE.TextGeometry('GAME OVER', 
-			{size: 70, height: 0, weight: "bold", 
+		textGeom = new THREE.TextGeometry('GAME OVER, press 2 to try level 2', 
+			{size: 35, height: 0, weight: "bold", 
 			font: 'bitstream vera sans mono'});
 	}
 	var textMesh = new THREE.Mesh(textGeom, material);
+	textMesh.name = "endTextMesh"
 	textMesh.position.set(params.endTextPosX, -20, params.pipeEndRadius); // in front of pipes
-
+	if(onLevel2) {
+		textMesh.rotation.y = (-Math.PI/6);
+	}
 	scene.add(textMesh);
 	render();
 }
+
 
 var jumping = false;
  
@@ -309,7 +332,7 @@ function updateState() {
     }
 
     // if bunny hits floor/ceiling, end game, print "game over" text
-    if(bunnyBox.min.y <= (-params.sceneHeight) || bunnyBox.min.y >= (params.sceneHeight)) {
+    if(bunnyBox.min.y <= (-sceneWidth) || bunnyBox.min.y >= (sceneWidth)) {
     	console.log("floor/ceiling die");
     	//bunny fading goes here
     	endText(false);
@@ -350,11 +373,27 @@ function oneJump() {
 	jumping = true;
 }
 
+// when 'a' key is pressed, bunny moves left/negative on the z-axis
+function zMoveLeft() {
+	console.log("initial z: " + bunny.position.z);
+	bunny.position.z -= params.bunnyDeltaZ;
+	console.log("after move: " + bunny.position.z);
+	render();
+}
+
+// when 'd' key is pressed, bunny moves right/positive on the z-axis
+function zMoveRight() {
+	bunny.position.z += params.bunnyDeltaZ;
+}
+
 TW.setKeyboardCallback("0",firstState,"reset animation");
 TW.setKeyboardCallback("1",oneStep,"advance by one step");
 TW.setKeyboardCallback("g",animate,"go:  start animation");
 TW.setKeyboardCallback("s",stopAnimation,"stop animation");
 TW.setKeyboardCallback(" ",oneJump,"bunny jump");
 TW.setKeyboardCallback("v",changeView,"change camera");
+TW.setKeyboardCallback("2",level2,"change to level 2");
+TW.setKeyboardCallback("a",zMoveLeft,"move bunny left/negative on z axis");
+TW.setKeyboardCallback("d",zMoveRight,"move bunny right/positive on z axis");
 
 

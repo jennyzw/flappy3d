@@ -24,5 +24,14 @@ calculated score by counting how many pipes passed (some math)
 - UNSOLVED ISSUE: stopping animation
 
 improvements for version 2, mostly aesthetic and UI things
+- moar pipes
+- less space
+- moar 3D
 - smoother jumping (J)
 - harder level ideas (TAng)
+
+LEVEL 2 (keyboard callback '2')
+- STOP ANIMATION ERROR
+- fix text
+- bunny goes too far
+- bunny tilt

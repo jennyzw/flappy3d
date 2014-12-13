@@ -39,7 +39,7 @@ function awangatangBunny() {
 	appScale: 4,
 	tailRadius: 4,
 	furColor: new THREE.Color(0xF0F0F0),
-	texture: new THREE.ImageUtils.loadTexture( "/images/fur.jpg",
+	texture: new THREE.ImageUtils.loadTexture("/images/fur.jpg",
                                                      THREE.UVMapping,
                                                      // onload event handler
                                                      function () {
