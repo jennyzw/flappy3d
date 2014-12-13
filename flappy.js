@@ -83,7 +83,7 @@ var canvasHeight = canvas.height;
 // creates a custom camera
 function myCamera(fovy, eye, at) {
 	var canvas = TW.lastClickTarget;
-	camera = new THREE.PerspectiveCamera( fovy, canvasWidth/canvasHeight, 1, 550);
+	camera = new THREE.PerspectiveCamera( fovy, canvasWidth/canvasHeight, 1, sceneWidth*2);
 	camera.position.copy(eye);
 	camera.lookAt(at);
 	scene.add(camera);
@@ -95,11 +95,19 @@ var at = new THREE.Vector3(params.cameraAdjustX, params.cameraAdjustY, 0);
 myCamera(params.fovy, eye, at);
 render();
 
+function changeView() {
+     scene.remove(camera);
+	var eye = new THREE.Vector3(params.cameraAdjustX-300, params.cameraAdjustY, 500);
+	var at = new THREE.Vector3(params.cameraAdjustX, params.cameraAdjustY, 0);
+	myCamera(params.fovy, eye, at);
+    render();
+  }
+
 // returns a plane with a background image texture-mapped onto it
 function loadBackground(params) {
     var planeGeom = new THREE.PlaneGeometry(sceneWidth*2+params.pipeRadius*2, params.sceneHeight*2+params.pipeRadius*2);
     var imageLoaded = false;
-    var backgroundTexture = new THREE.ImageUtils.loadTexture( "images/background-orig.jpg",
+    var backgroundTexture = new THREE.ImageUtils.loadTexture( "images/background.jpg",
                                                          THREE.UVMapping,
                                                          // onload event handler
                                                          function () {
@@ -121,11 +129,26 @@ var bunny, pipes;
 // bounding boxes around bunny and pipes
 var bunnyBox; 
 var pipeBoxArray = new Array();
+
+var texture = THREE.ImageUtils.loadTexture( "images/cutecloud.jpg" );
+texture.wrapS = THREE.RepeatWrapping;
+texture.wrapT = THREE.RepeatWrapping;
+texture.repeat.set( 4, 4 );
+
 /* adds and positions background plane, a bunny, all pipe sets, and 
 	lights to the scene */
 function buildScene(params, scene) {
+	var sphereBackground = new THREE.Mesh(
+ 		new THREE.SphereGeometry(sceneWidth, 50, 50),
+  		new THREE.MeshBasicMaterial({
+    		map: texture
+  })
+);
+	sphereBackground.scale.x = -1;
+	scene.add(sphereBackground);
+
 	var background = loadBackground(params);
-	scene.add(background);
+	// scene.add(background);
 
 	bunny = awangatangBunny();
     bunny.position.x = params.bunnyStartOffset;
@@ -332,5 +355,6 @@ TW.setKeyboardCallback("1",oneStep,"advance by one step");
 TW.setKeyboardCallback("g",animate,"go:  start animation");
 TW.setKeyboardCallback("s",stopAnimation,"stop animation");
 TW.setKeyboardCallback(" ",oneJump,"bunny jump");
+TW.setKeyboardCallback("v",changeView,"change camera");
 
 
