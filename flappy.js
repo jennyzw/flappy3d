@@ -60,7 +60,7 @@ var params = {
 	pipesDeltaX: 1.5,
 
 	scorePosX: -300,
-	endTextPosX: -600
+	endTextPosX: -500
 };
 
 var scene = new THREE.Scene();
@@ -246,9 +246,9 @@ function getScore() {
         color: 0x000000
     });
 	   textGeom = new THREE.TextGeometry(score, 
-			{size: 60, height: 0, weight: "bold", font: 'audimat mono'});
+			{size: 50, height: 0, weight: "bold", font: 'audimat mono'});
 	var textMesh = new THREE.Mesh(textGeom, material);
-	textMesh.position.set(params.scorePosX, 100, params.pipeEndRadius); // in front of pipes
+	textMesh.position.set(params.scorePosX, 100, params.pipeEndRadius*2); // in front of pipes
 	textMesh.name = "scoreText";
 	scene.remove(scene.getObjectByName("scoreText"));
 	if(onLevel2) {
@@ -263,6 +263,11 @@ function getScore() {
 
 // adds a text geometry of win status to the scene
 function endText(win) {
+
+	//remove pipes
+	for(pipeIndex in pipes) {
+		scene.remove(pipes[pipeIndex]);
+	} 
 	var textGeom;
 	var material = new THREE.MeshBasicMaterial({
         color: 0xFFFFFF,
@@ -270,11 +275,11 @@ function endText(win) {
 
 	if(win) {
 		textGeom = new THREE.TextGeometry('YOU WIN, press 2 to move on', 
-			{size: 35, height: 0, weight: "bold", 
+			{size: 20, height: 0, weight: "bold", 
 			font: 'bitstream vera sans mono'});
 	} else {
 		textGeom = new THREE.TextGeometry('GAME OVER, press 2 to try level 2', 
-			{size: 35, height: 0, weight: "bold", 
+			{size: 20, height: 0, weight: "bold", 
 			font: 'bitstream vera sans mono'});
 	}
 	var textMesh = new THREE.Mesh(textGeom, material);
@@ -283,6 +288,13 @@ function endText(win) {
 	if(onLevel2) {
 		textMesh.rotation.y = (-Math.PI/6);
 	}
+	// var textPlane = new THREE.PlaneGeometry(400, 400, 40);
+	// planeMat = new THREE.MeshBasicMaterial();
+    
+ //    planeMesh = new THREE.Mesh( textPlane, planeMat );
+	// planeMesh.position.set(params.endTextPosX, -30, params.pipeEndRadius); // in front of pipes
+	// // textPlane.add(textMesh);
+	// scene.add(planeMesh);
 	scene.add(textMesh);
 	render();
 }
