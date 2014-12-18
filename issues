@@ -12,28 +12,14 @@ random top height, subtract from whole scene height to get bottom height
 
 ~*~*~*~DEMO~*~*~*~
 
-issues
-- jumping while falling (TAng)
-- intersect bounding boxes (J)
-iterate through array of pipe sets, got top/bottom objects by name, created boxes for each of them
-
-- moving bounding boxes along with animation (TAng)
-
-- getting the score (J)
-calculated score by counting how many pipes passed (some math)
-- UNSOLVED ISSUE: stopping animation
 
 improvements for version 2, mostly aesthetic and UI things
 - moar pipes
 - less space
-- moar 3D
-- smoother jumping (J)
-- harder level ideas (TAng)
+- web page w/ instructions & screenshots
 
-LEVEL 2 (keyboard callback '2')
-- STOP ANIMATION ERROR
-- bunny tilt
-- bunny goes too far
-- better fog
+- STOP ANIMATION ERRORS
+- add curves/surfaces
 
-bunny fur
+extras:
+fog

@@ -30,7 +30,7 @@ All pipe sets: [pipeOffsetX-pipeEndRadius] to [pipeOffsetX-pipeEndRadius]+[pipeO
 var params = {
 	fovy: 50,
 	cameraAdjustX: -200,
-	cameraAdjustX2: 300,
+	cameraAdjustX2: 400,
 	cameraAdjustY: 0,
 
 	bunnyScale: 2,
@@ -54,11 +54,11 @@ var params = {
 	directionalZ: 4,
 
 	deltaT: 0.0035,
-	bunnyDeltaY: 2,
+	bunnyDeltaY: 2.3,
 	bunnyDeltaZ: 2,
 	bunnyJumpY: 40,
 	bunnyTiltDown: TW.degrees2radians(-2),
-	bunnyTiltUp: TW.degrees2radians(50),
+	bunnyTiltUp: TW.degrees2radians(30),
 	tiltDownMax: -Math.PI/8,
 	tiltUpMax: 0,
 	pipesDeltaX: 2,
@@ -99,13 +99,22 @@ var at = new THREE.Vector3(params.cameraAdjustX, params.cameraAdjustY, 0);
 myCamera(params.fovy, eye, at);
 render();
 
-function changeView() {
-    scene.remove(camera);
-	var eye = new THREE.Vector3(params.cameraAdjustX-params.cameraAdjustX2,
-								params.cameraAdjustY, 500);
-	var at = new THREE.Vector3(params.cameraAdjustX, params.cameraAdjustY, 0);
-	myCamera(params.fovy, eye, at);
-    render();
+function changeView(level) {
+	 scene.remove(camera);
+	 if(level == 1) {
+	 	//set camera for level 1
+	 	var eye = new THREE.Vector3(params.cameraAdjustX,
+	 		params.cameraAdjustY, 500);
+	 	var at = new THREE.Vector3(params.cameraAdjustX, params.cameraAdjustY, 0);
+	 	myCamera(params.fovy, eye, at);
+	 } else if(level == 2) {
+	 	//set camera for level 2
+	 	var eye = new THREE.Vector3(params.cameraAdjustX-params.cameraAdjustX2,
+	 		params.cameraAdjustY, 500);
+	 	var at = new THREE.Vector3(params.cameraAdjustX, params.cameraAdjustY, 0);
+	 	myCamera(params.fovy, eye, at);
+	 }
+	 render();
  }
 
 var bunny, pipes;
@@ -173,13 +182,31 @@ function resetAnimationState() {
 }
  
 resetAnimationState();
- 
+
+// reset game to initial position at level 1
 function firstState() {
+	//set camera to level 1 pos
+	onLevel2 = false;
+	changeView(1);
     resetAnimationState();
     scene.remove(scene.getObjectByName("endTextMesh"));
     scene.remove(scene.getObjectByName("scoreText"));
-    setBunnyPosition(0);
-    setPipesPosition(0);
+
+	//remove pipes
+	for(pipeIndex in pipes) {
+		scene.remove(pipes[pipeIndex]);
+	} 
+
+	//rebuild all pipe sets
+	pipes = buildAllPipes(params.numPipes);
+
+	for(pipeIndex in pipes) {
+		scene.add(pipes[pipeIndex]);
+	} 
+	// resets bunny's position and tilt
+	bunny.rotation.z = 0;
+    bunny.position.set(params.bunnyStartOffset,0,0);
+
     render();
 }
 
@@ -200,20 +227,17 @@ function setPipesPosition(time) {
 	return updatedPos;
 }
 
+// changes game to level 2
 function level2() {
-	onLevel2 = true;
-	
 	firstState();
+	onLevel2 = true;
+
 	//change camera view
-	changeView();
+	changeView(2);
 
 	// rotate text
 	var endTextMesh = scene.getObjectByName("endTextMesh");
-	console.log(scene.getObjectByName("endTextMesh"));
-	// endText.rotation.y = Math.PI/2;
 	var scoreTextMesh = scene.getObjectByName("scoreText");
-	console.log(scoreTextMesh);
-	// scoreText.rotation.y = Math.PI/2;
 
 	//remove pipes
 	for(pipeIndex in pipes) {
@@ -223,8 +247,8 @@ function level2() {
 	//rebuild all pipe sets
 	pipes = buildAllPipes(params.numPipes);
 
-	var min = -80;
-	var max = 80;
+	var min = -100;
+	var max = 100;
 
 	//setting random z position for each pipeset in pipes
 	for(pipeIndex in pipes) {
@@ -233,7 +257,6 @@ function level2() {
 		scene.add(pipes[pipeIndex]);
 	} 
 }
-
 
 // returns number of pipes passed
 function getScore() {
@@ -277,7 +300,7 @@ function endText(win) {
     });
 
 	if(win) {
-		textGeom = new THREE.TextGeometry('YOU WIN, press 2 to move on', 
+		textGeom = new THREE.TextGeometry('YOU WIN, press 2 for level 2', 
 			{size: 20, height: 0, weight: "bold", 
 			font: 'bitstream vera sans mono'});
 	} else {
@@ -398,15 +421,22 @@ function oneJump() {
 
 // when 'a' key is pressed, bunny moves left/negative on the z-axis
 function zMoveLeft() {
-	console.log("initial z: " + bunny.position.z);
-	bunny.position.z -= params.bunnyDeltaZ;
-	console.log("after move: " + bunny.position.z);
-	render();
+	if(bunny.position.z + params.bunnyDeltaZ > -100) {
+		console.log("initial z: " + bunny.position.z);
+		bunny.position.z -= params.bunnyDeltaZ;
+		console.log("after move: " + bunny.position.z);
+		render();
+	}
 }
 
 // when 'd' key is pressed, bunny moves right/positive on the z-axis
 function zMoveRight() {
-	bunny.position.z += params.bunnyDeltaZ;
+	if(bunny.position.z + params.bunnyDeltaZ < 100) {
+		console.log("initial z: " + bunny.position.z);
+		bunny.position.z += params.bunnyDeltaZ;
+		console.log("after move: " + bunny.position.z);
+		render();
+	}
 }
 
 TW.setKeyboardCallback("0",firstState,"reset animation");
@@ -414,7 +444,7 @@ TW.setKeyboardCallback("1",oneStep,"advance by one step");
 TW.setKeyboardCallback("g",animate,"go:  start animation");
 TW.setKeyboardCallback("s",stopAnimation,"stop animation");
 TW.setKeyboardCallback(" ",oneJump,"bunny jump");
-TW.setKeyboardCallback("v",changeView,"change camera");
+// TW.setKeyboardCallback("v",changeView,"change camera");
 TW.setKeyboardCallback("2",level2,"change to level 2");
 TW.setKeyboardCallback("a",zMoveLeft,"move bunny left/negative on z axis");
 TW.setKeyboardCallback("d",zMoveRight,"move bunny right/positive on z axis");
