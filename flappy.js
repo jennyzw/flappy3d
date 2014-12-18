@@ -170,6 +170,8 @@ function buildScene(params, scene) {
 
 buildScene(params, scene);
 
+// animation starts
+
 var onLevel2 = false;
 
 function resetAnimationState() {
@@ -286,7 +288,6 @@ function getScore() {
 }
 
 
-
 // adds a text geometry of win status to the scene
 function endText(win) {
 
@@ -314,17 +315,9 @@ function endText(win) {
 	if(onLevel2) {
 		textMesh.rotation.y = (-Math.PI/6);
 	}
-	// var textPlane = new THREE.PlaneGeometry(400, 400, 40);
-	// planeMat = new THREE.MeshBasicMaterial();
-    
- //    planeMesh = new THREE.Mesh( textPlane, planeMat );
-	// planeMesh.position.set(params.endTextPosX, -30, params.pipeEndRadius); // in front of pipes
-	// // textPlane.add(textMesh);
-	// scene.add(planeMesh);
 	scene.add(textMesh);
 	render();
 }
-
 
 var jumping = false;
  
