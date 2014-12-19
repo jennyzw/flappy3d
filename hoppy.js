@@ -1,11 +1,9 @@
 /* 
 Tiffany Ang, Jenny Wang
-12/07/14
+12/18/14
 CS 307
 
-creates a 3D scene of flappy bird, with a bunny instead of a bird 
-Current status (11/19): Single static frame of game
-Current status (12/7): Working game
+creates a 3D game of flappy bird, with a bunny instead of a bird 
 
 Dimensions of objects
 Whole scene: -520 to 520 on the x-axis, -250 to 250 on the y-axis
@@ -42,7 +40,7 @@ var params = {
 	pipeEndColor: new THREE.Color(0x246B24), // dark green
 	pipeEndRadius: 26,
 	pipeEndHeight: 7,
-    pipeSpaceHeight: 300, // space between top and bottom pipes (vertical)
+    pipeSpaceHeight: 150, // space between top and bottom pipes (vertical)
 	pipeOffsetX: 300, // space between pipe sets (horizontal)
 	numPipes: 7,
 
@@ -71,7 +69,6 @@ var params = {
 
 var scene = new THREE.Scene();
 
-// spaces between the pipes times number of pipes
 var sceneWidth = params.numPipes*params.pipeOffsetX;
 
 var renderer = new THREE.WebGLRenderer();
@@ -82,7 +79,6 @@ function render() {
 TW.mainInit(renderer,scene);
 
 var canvas = TW.lastClickTarget;
-
 var canvasWidth = canvas.width;
 var canvasHeight = canvas.height;
 
@@ -101,6 +97,7 @@ var at = new THREE.Vector3(params.cameraAdjustX, params.cameraAdjustY, 0);
 myCamera(params.fovy, eye, at);
 render();
 
+/* toggle camera for different levels. level 2 moves the camera to the far left */
 function changeView(level) {
 	 scene.remove(camera);
 	 if(level == 1) {
@@ -129,7 +126,7 @@ texture.wrapS = THREE.RepeatWrapping;
 texture.wrapT = THREE.RepeatWrapping;
 texture.repeat.set( 4, 4 );
 
-/* adds and positions background plane, a bunny, all pipe sets, and 
+/* adds and positions background sphere, a bunny, all pipe sets, airplanes, and 
 	lights to the scene */
 function buildScene(params, scene) {
 	var sphereBackground = new THREE.Mesh(
@@ -140,8 +137,6 @@ function buildScene(params, scene) {
 	);
 	sphereBackground.scale.x = -1;
 	scene.add(sphereBackground);
-
-	// scene.fog = new THREE.FogExp2( 0xD6EBFF, 0.0008 );
 
 	bunny = awangatangBunny();
     bunny.position.x = params.bunnyStartOffset;
@@ -220,6 +215,7 @@ function firstState() {
 	bunny.rotation.z = 0;
     bunny.position.set(params.bunnyStartOffset,0,0);
 
+    // positions planes at arbitrary x, y, z values
     plane1.position.set(0, -200, -20);
     plane2.position.set(-300, 150, 40);
 
@@ -230,7 +226,6 @@ function firstState() {
 function setBunnyPosition(time) {
 	var updatedPos = animationState.bunnyPosY - params.bunnyDeltaY;
 	bunny.position.y = updatedPos;
-	console.log("bunny moved");
 	return updatedPos;
 }
 
@@ -263,6 +258,7 @@ function level2() {
 	//rebuild all pipe sets
 	pipes = buildAllPipes(params.numPipes);
 
+	// values for the pipes' z positions
 	var min = -100;
 	var max = 100;
 
@@ -278,33 +274,28 @@ function level2() {
 function getScore() {
 	var score = Math.ceil((animationState.pipePosX/params.pipeOffsetX))*-1;
 	// prints 0 for any no pipes passed
-    
     if(score<=0) {
 		score = 0;
 	}
 	// creates text geometry of score
-	var textGeom;
-	var material = new THREE.MeshBasicMaterial({
-        color: 0x000000
-    });
-	   textGeom = new THREE.TextGeometry(score, 
+	var material = new THREE.MeshBasicMaterial({color: 0x000000});
+	var textGeom = new THREE.TextGeometry(score, 
 			{size: 50, height: 0, weight: "bold", font: 'audimat mono'});
 	var textMesh = new THREE.Mesh(textGeom, material);
 	textMesh.position.set(params.scorePosX, 100, params.pipeEndRadius*2); // in front of pipes
 	textMesh.name = "scoreText";
 	scene.remove(scene.getObjectByName("scoreText"));
+	// accounts for different camera perspective in level 2
 	if(onLevel2) {
 		textMesh.rotation.y = (-Math.PI/6);
 	}
 	scene.add(textMesh);
-
 	return score;
 }
 
 
-// adds a text geometry of win status to the scene
+// adds a text geometry of win status to the scene after winning or losing the game
 function endText(win) {
-
 	//remove pipes
 	for(pipeIndex in pipes) {
 		scene.remove(pipes[pipeIndex]);
@@ -326,6 +317,7 @@ function endText(win) {
 	var textMesh = new THREE.Mesh(textGeom, material);
 	textMesh.name = "endTextMesh"
 	textMesh.position.set(params.endTextPosX, -20, params.pipeEndRadius); // in front of pipes
+	// accounts for different camera perspective in level 2
 	if(onLevel2) {
 		textMesh.rotation.y = (-Math.PI/6);
 	}
@@ -333,6 +325,7 @@ function endText(win) {
 	render();
 }
 
+// boolean tracking bunny movement
 var jumping = false;
  
 function updateState() {
@@ -340,6 +333,7 @@ function updateState() {
     animationState.time += params.deltaT;
     var time = animationState.time;
 
+    // moves the two planes forward at different speeds
    	plane1.position.x -= params.plane1Delta;
     plane2.position.x += params.plane2Delta;
 
@@ -357,7 +351,6 @@ function updateState() {
     	if(bunny.rotation.z < params.tiltUpMax) {
     		bunny.rotation.z += params.bunnyTiltUp;
     	}
-    	console.log(bunny.rotation.z);
     	jumping = false;
     }
     var pipePosX = setPipesPosition(time);
@@ -376,13 +369,9 @@ function updateState() {
     	pipeBoxArray[(i*2)+1].setFromObject(bottomSeg);
     }
 
-    var score = getScore();
-
     // if bunny hits pipe, end game, print "game over" text
     for(var i = 0; i < pipeBoxArray.length; i++) {
     if (bunnyBox.isIntersectionBox(pipeBoxArray[i])) {
-    	console.log("bunny/pipe intersect");
-		//bunny fading goes here
     	endText(false);
     	window.cancelAnimationFrame(requestAnimationFrame());
     	}
@@ -390,12 +379,11 @@ function updateState() {
 
     // if bunny hits floor/ceiling, end game, print "game over" text
     if(bunnyBox.min.y <= (-canvasHeight/2) || bunnyBox.min.y >= (canvasHeight/2)) {
-    	console.log("floor/ceiling die");
-    	//bunny fading goes here
     	endText(false);
     	window.cancelAnimationFrame(requestAnimationFrame());
     }
 
+    var score = getScore();
     // win, print "you win" text and end game
     if(score == params.numPipes) {
     	// when win, remove pipes from scene
@@ -433,9 +421,7 @@ function oneJump() {
 // when 'a' key is pressed, bunny moves left/negative on the z-axis
 function zMoveLeft() {
 	if(bunny.position.z + params.bunnyDeltaZ > -100) {
-		console.log("initial z: " + bunny.position.z);
 		bunny.position.z -= params.bunnyDeltaZ;
-		console.log("after move: " + bunny.position.z);
 		render();
 	}
 }
@@ -443,9 +429,7 @@ function zMoveLeft() {
 // when 'd' key is pressed, bunny moves right/positive on the z-axis
 function zMoveRight() {
 	if(bunny.position.z + params.bunnyDeltaZ < 100) {
-		console.log("initial z: " + bunny.position.z);
 		bunny.position.z += params.bunnyDeltaZ;
-		console.log("after move: " + bunny.position.z);
 		render();
 	}
 }
@@ -455,9 +439,6 @@ TW.setKeyboardCallback("1",oneStep,"advance by one step");
 TW.setKeyboardCallback("g",animate,"go:  start animation");
 TW.setKeyboardCallback("s",stopAnimation,"stop animation");
 TW.setKeyboardCallback("j",oneJump,"bunny jump");
-// TW.setKeyboardCallback("v",changeView,"change camera");
 TW.setKeyboardCallback("2",level2,"change to level 2");
 TW.setKeyboardCallback("a",zMoveLeft,"move bunny left/negative on z axis");
 TW.setKeyboardCallback("d",zMoveRight,"move bunny right/positive on z axis");
-
-

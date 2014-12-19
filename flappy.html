@@ -9,13 +9,17 @@ Current status: Single static frame of game
 
 <html>
   <head>
-    <title>Flappy3D</title>
+    <title>Hoppy Bunny</title>
     <style>      
-      canvas {
-        float: left;
-          width: 70%;
-          height: 100%;
-      }
+    canvas {
+      float: left;
+      width: 70%;
+      height: 100%;
+      padding-bottom: 20px;
+      margin-bottom: 20px;
+      border-bottom: 3px solid;
+      border-bottom-color: #CCDDFF;
+    }
 
       @font-face {
           font-family: "bitstream vera sans mono";
@@ -29,6 +33,22 @@ Current status: Single static frame of game
         width: 26%;
       }
 
+      #introduction {
+        font-family: "bitstream vera sans mono", sans;
+        float: left;
+      }
+
+/*      #game {
+        margin-bottom: 20px;
+        border-bottom: 3px solid;
+        border-bottom-color: #CCDDFF;
+      }*/
+
+  /*    img {
+        width: 70%
+        height: 70%;
+      }
+*/
     </style>
 
     <script src="http://cs.wellesley.edu/~cs307/threejs/libs/three.js"></script>
@@ -39,20 +59,46 @@ Current status: Single static frame of game
     <script src="audimat_mono_smallcaps.typeface.js"></script>
     <script src = "bitstream_vera_sans_mono_bold.typeface.js"></script>
   </head>
-<body>
-  <div id="game">
-    <script src="awangatangBunny.js"></script>
-    <script src="pipes.js"></script>
-    <script src = "plane.js"></script>
-    <script src="flappy.js"></script>
-  </div>
-    <div id="instructions"><h1>Flappy Bunny</h1>
-      <p>g: start the game<br>
-        space bar: jump<br>
-        s: stop<br>
-        0: restart level 1<br>
-        2: start level 2<br>
-        a: move left in level 2<br>
-        d: move right in level 2<br></p></div>
+  <body>
+    <div id="game">
+      <script src="awangatangBunny.js"></script>
+      <script src="pipes.js"></script>
+      <script src = "plane.js"></script>
+      <script src="hoppy.js"></script>
+      <div id="instructions">
+        <h1>Hoppy Bunny</h1>
+        <h3>Tiffany Ang & Jenny Wang</h3>
+        <p>g: start the game<br>
+          j: jump<br>
+          s: stop<br>
+          0: restart level 1<br>
+          2: start level 2<br>
+          a: move left in level 2<br>
+          d: move right in level 2<br>
+          <br>
+          <a href="#intro">click here to learn more about our project</a>
+        </p>
+      </div>
+    </div>
+    <div id="info">
+      <div id="introduction">
+        <p><a name="intro">We</a> recreated the popular game "Flappy Bird" using ThreeJS.</p> 
+        <p>Our game has two levels. The first is similar to the traditional Flappy Bird game, where you jump through sets of pipes. The second level has a different camera perspective and introduces 3D depth movement, in which the bunny has to jump through pipes that not only vary in height, but also in depth positioning.</p>
+        <p>The notable objects in our scene are the bunny, pipes and planes. The bunny is made up of scaled sphere geometries with a texture mapping of a fur image, while the pipes are an array of cylinder geometries. The plane was created using an extruded shape geometry with various Bezier Curves.</p>
+        <p>To create the movement in our game, in each frame, the bunny falls some amount on the y-axis, while the user has the option to have the bunny jump by pressing 'j'. As the bunny falls, it tilts forward and as it jumps, it tilts back up. The pipes move left to simulate the bunny moving forward through the pipes. Meanwhile, the planes, which are in different positions, move forward at different speeds.</p>
+        <p>The score is displayed and updated in real time as the bunny passes through the sets of pipes.</p>
+        <p>Our background is an image texture mapped with repitition onto the interior of a sphere geometry. We have ambient lighting and a directional light positioned at the upper right. We chose to keep the scene static in order to maintain the game-like feel.</p>
+        <p>Screenshot 1: Bunny passing through 1 set of pipes and score updating</p>
+        <img src="images/passed-pipe.png"/>
+        <p>Screenshot 2: Losing after hitting a pipe</p>
+        <img src="images/screen2.png"/>
+        <p>Screenshot 3: Playing level 2</p>
+        <img src="images/screen3.png"/>
+        <p>Screenshot 4: Winning the game :)</p>
+        <img src="images/screen4.png"/>
+      </div>
+      
+    </div>
+
 </body>
 </html>

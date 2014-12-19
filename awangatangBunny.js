@@ -48,19 +48,16 @@ function awangatangBunny() {
                                                          imageLoaded = true;
                                                          render();
                                                      })
-	
 
 };
-
 
 	// creates a material for the bunny with fur texture
 	var bunnyMat = new THREE.MeshLambertMaterial( {color: bunnyParams.furColor,
 												ambient: 0xFFE0FF,
 												specular: 0xFFFFFF,
 												shininess: 0,
-												// transparent: true,
-	        									// opacity: 0.5,
 												map: bunnyParams.texture} );
+
 	/* returns complete bunny object with head & ears, body, feet, and tail */
 	function buildBunny() {
 		var bunny = new THREE.Object3D();
@@ -78,7 +75,8 @@ function awangatangBunny() {
 		bunny.add(feet);
 
 		var tail = buildTail();
-		tail.position.set(-bunnyParams.bodyRadius*bunnyParams.bodyScale,bunnyParams.bodyRadius-2,0);
+		tail.position.set(-bunnyParams.bodyRadius*bunnyParams.bodyScale,
+						  bunnyParams.bodyRadius-2,0);
 		bunny.add(tail);
 
 		return bunny;
@@ -116,8 +114,6 @@ function awangatangBunny() {
 			bunnyParams.sphereDetail, bunnyParams.sphereDetail);
 
 		var appMesh = new THREE.Mesh(appGeom, bunnyMat);
-
-		// appMesh.scale.y = bunnyParams.appScale;
 		return appMesh;
 	}
 
@@ -167,5 +163,4 @@ function awangatangBunny() {
 
 	var bunny = buildBunny();
 	return bunny;
-
 }

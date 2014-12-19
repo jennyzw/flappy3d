@@ -1,6 +1,6 @@
 /* 
 Tiffany Ang, Jenny Wang
-11/19/14 
+12/18/14 
 CS 307
 
 contains methods to create a single pipe and build all pipe sets
@@ -11,10 +11,6 @@ All pipe sets: [pipeOffsetX-pipeEndRadius] to [pipeOffsetX-pipeEndRadius]+[pipeO
 
 			  -[pipeEndRadius] to [pipeEndRadius]
 			  -16 to 16 on the z-axis
-
-V 2.0: 
-- random pipe heights
-
 */
 
 // Returns a random integer between min (included) and max (excluded)
