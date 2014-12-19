@@ -94,8 +94,8 @@ function buildPipeSet(params, pipeIndex) {
 /* returns all 4 pipe sets spaced by pipeOffsetX */
 function buildAllPipes(numPipes) {
 	// generate random pipe heights
-	var min = 600;
-	var max = 750;
+	var min = 550;
+	var max = 800;
 
 	params.topPipeHeights = new Array(numPipes);
 	for(var i = 0; i < numPipes; i++) {

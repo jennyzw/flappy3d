@@ -1,0 +1,41 @@
+<!-- 
+Kelsey Reiman and Scott D. Anderson
+11/1/14 
+CS 307
+
+Creates a cubic bezier curve that roughly S-shaped.
+
+I learned how to make bezier curves in three.js from: 
+http://www.lab4games.net/zz85/blog/2014/09/08/rendering-lines-and-bezier-curves-in-three-js-and-webgl/
+ -->
+<html>
+  <head>
+    <title>S Curve</title>
+    <style>      
+      canvas {
+
+          width: 80%;
+          height: 80%;
+      }
+    </style>
+    <script src="http://cs.wellesley.edu/~cs307/threejs/libs/three.min.js"></script>
+    <script src="http://cs.wellesley.edu/~cs307/threejs/libs/OrbitControls.js"></script>
+    <script src="http://cs.wellesley.edu/~cs307/threejs/libs/tw.js"></script>
+    <script src="http://cs.wellesley.edu/~cs307/threejs/libs/dat.gui.min.js"></script>
+    
+  </head>
+<body>
+
+<script id="prog">
+
+var renderer = new THREE.WebGLRenderer();
+var scene = new THREE.Scene(); 
+TW.mainInit(renderer,scene);
+TW.cameraSetup(renderer,scene, {minx:-100,maxx:100,miny:-100,maxy:100,minz:-100,maxz:100});
+
+TW.viewFromFront();        
+
+</script>
+<script src="plane.js"></script>
+</body>
+</html>
