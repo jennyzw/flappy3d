@@ -21,9 +21,10 @@ function makePlane() {
 		steps: 1
 	};
 
-	var bodyMat = new THREE.MeshPhongMaterial( {color: 0xE0E0E0 ,
-	     											ambient: 0xE0E0E0 ,  
-	                                                specular: 0xE0E0E0 ,
+	var bodyMat = new THREE.MeshPhongMaterial( {color: 0xC0C0C0  ,
+	     											ambient: 0xC0C0C0  ,  
+	                                                specular: 0xC0C0C0  ,
+	                                                opacity: 5,
 	                                                shininess: 5} );
 
 	var wingMat = new THREE.MeshPhongMaterial( {color: 0xCC0000,

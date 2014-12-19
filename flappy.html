@@ -12,12 +12,25 @@ Current status: Single static frame of game
     <title>Flappy3D</title>
     <style>      
       canvas {
-          /*width: 100%;*/
-          /*height: 100%;*/
-          width: 75%;
+        float: left;
+          width: 70%;
           height: 100%;
       }
+
+      @font-face {
+          font-family: "bitstream vera sans mono";
+          src: url(VeraMono.ttf) format("truetype");
+      }
+
+      #instructions {
+        font-family: "bitstream vera sans mono", sans;
+        float: right;
+        text-align: left;
+        width: 26%;
+      }
+
     </style>
+
     <script src="http://cs.wellesley.edu/~cs307/threejs/libs/three.js"></script>
     <script src="http://cs.wellesley.edu/~cs307/threejs/libs/OrbitControls.js"></script>
     <script src="http://cs.wellesley.edu/~cs307/threejs/libs/tw.js"></script>
@@ -25,13 +38,21 @@ Current status: Single static frame of game
     <script src="http://mrdoob.github.com/three.js/examples/fonts/optimer_bold.typeface.js"></script>
     <script src="audimat_mono_smallcaps.typeface.js"></script>
     <script src = "bitstream_vera_sans_mono_bold.typeface.js"></script>
-
-
   </head>
 <body>
+  <div id="game">
     <script src="awangatangBunny.js"></script>
     <script src="pipes.js"></script>
     <script src = "plane.js"></script>
     <script src="flappy.js"></script>
+  </div>
+    <div id="instructions"><h1>Flappy Bunny</h1>
+      <p>g: start the game<br>
+        space bar: jump<br>
+        s: stop<br>
+        0: restart level 1<br>
+        2: start level 2<br>
+        a: move left in level 2<br>
+        d: move right in level 2<br></p></div>
 </body>
 </html>

@@ -44,7 +44,7 @@ var params = {
 	pipeEndHeight: 7,
     pipeSpaceHeight: 150, // space between top and bottom pipes (vertical)
 	pipeOffsetX: 300, // space between pipe sets (horizontal)
-	numPipes: 5,
+	numPipes: 7,
 
 	ambLightColor: 0xffffff, // soft, light gray
 	directionalLightColor: 0xffffff, // white
@@ -62,6 +62,8 @@ var params = {
 	tiltDownMax: -Math.PI/8,
 	tiltUpMax: 0,
 	pipesDeltaX: 2,
+	plane1Delta: 1,
+	plane2Delta: 0.5,
 
 	scorePosX: -300,
 	endTextPosX: -500
@@ -157,9 +159,11 @@ function buildScene(params, scene) {
 
 	plane1 = makePlane();
 	scene.add(plane1);
+	plane1.position.set(0, -200, -20);
 
 	plane2 = makePlane();
 	scene.add(plane2);
+	plane2.position.set(-300, 150, 40);
 	plane2.rotation.y = Math.PI;
 
 	var ambLight = new THREE.AmbientLight(params.ambLightColor);
@@ -215,6 +219,9 @@ function firstState() {
 	// resets bunny's position and tilt
 	bunny.rotation.z = 0;
     bunny.position.set(params.bunnyStartOffset,0,0);
+
+    plane1.position.set(0, -200, -20);
+    plane2.position.set(-300, 150, 40);
 
     render();
 }
@@ -332,6 +339,10 @@ function updateState() {
     // changes the time and everything in the state that depends on it
     animationState.time += params.deltaT;
     var time = animationState.time;
+
+   	plane1.position.x -= params.plane1Delta;
+    plane2.position.x += params.plane2Delta;
+
     // stops bunny from falling when it is jumping
     // tilts bunny down when falling, up when jumping
     if(!jumping) {
@@ -378,7 +389,7 @@ function updateState() {
     }
 
     // if bunny hits floor/ceiling, end game, print "game over" text
-    if(bunnyBox.min.y <= (-sceneWidth) || bunnyBox.min.y >= (sceneWidth)) {
+    if(bunnyBox.min.y <= (-canvasHeight/2) || bunnyBox.min.y >= (canvasHeight/2)) {
     	console.log("floor/ceiling die");
     	//bunny fading goes here
     	endText(false);

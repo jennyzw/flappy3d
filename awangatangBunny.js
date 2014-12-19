@@ -1,5 +1,5 @@
 /* A 3D bunny object
-Copyright (C) 2014 by Scott D. Anderson
+Copyright (C) 2014 by Jenny Wang & Tiffany Ang
 
 This program is free software: you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the Free
@@ -25,7 +25,8 @@ Contact us at jwang9@wellesley.edu and tang@wellesley.edu
  *
  * Creates a 3d bunny object.
  *
- * texture via http://www.photoshoptextures.com/animal-textures/cat-spots-texture.jpg
+ * texture via 
+ * http://www.commentnation.com/hotlinks/pink_faux_fur_seamless_background_texture_pattern.jpg
  */ 
 
 function awangatangBunny() {
